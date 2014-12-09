@@ -14,9 +14,6 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import com.googlecode.tesseract.android.TessBaseAPI;
-
-
-
 import android.app.Activity;
 import android.content.Intent;
 import android.content.res.AssetManager;
@@ -210,7 +207,13 @@ public class upload extends Activity {
                     }
                 }
 
-
+                Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
+                emailIntent.setType("application/image");
+                emailIntent.putExtra(android.content.Intent.EXTRA_EMAIL, new String[]{"stefan.nygren@gmail.com"});
+                emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT,"[TGS-DEBUG-DATA] " + getDeviceName());
+                emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, recognizedText);
+                emailIntent.putExtra(Intent.EXTRA_STREAM, imageUri);
+                startActivity(Intent.createChooser(emailIntent, "Send mail..."));
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
@@ -224,59 +227,26 @@ public class upload extends Activity {
         Toast toast = Toast.makeText(context, text, duration);
         toast.show();
     }
-}
-
-/*
-public class Upload extends Activity {
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-
-
-    void handleSendImage(Intent intent) {
-        Uri imageUri = (Uri) intent.getParcelableExtra(Intent.EXTRA_STREAM);
-        debug("got URI");
-        ImageView iv = (ImageView) findViewById(R.id.imageView1);
-        if (imageUri != null) {
-            try {
-                Bitmap bm = BitmapFactory.decodeStream(getContentResolver()
-                        .openInputStream(imageUri));
-                iv.setImageBitmap(bm);
-                debug("setting Image URI");
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
-
+    private String getDeviceName() {
+        String manufacturer = Build.MANUFACTURER;
+        String model = Build.MODEL;
+        if (model.startsWith(manufacturer)) {
+            return capitalize(model);
+        } else {
+            return capitalize(manufacturer) + " " + model;
         }
     }
 
-    private void debug(String string) {
-        Context context = getApplicationContext();
-        CharSequence text = string;
-        int duration = Toast.LENGTH_SHORT;
 
-        Toast toast = Toast.makeText(context, text, duration);
-        toast.show();
-
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.upload, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
+    private String capitalize(String s) {
+        if (s == null || s.length() == 0) {
+            return "";
         }
-        return super.onOptionsItemSelected(item);
+        char first = s.charAt(0);
+        if (Character.isUpperCase(first)) {
+            return s;
+        } else {
+            return Character.toUpperCase(first) + s.substring(1);
+        }
     }
 }
-*/
