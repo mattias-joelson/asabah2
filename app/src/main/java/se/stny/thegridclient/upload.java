@@ -1,35 +1,22 @@
 package se.stny.thegridclient;
 
-import se.stny.thegridclient.util.SystemUiHider;
-
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
-import android.content.res.AssetManager;
-import android.os.Build;
-import android.os.Bundle;
-import android.os.Environment;
-import android.os.Handler;
-import android.util.Log;
-import android.view.MotionEvent;
-import android.view.View;
-import com.googlecode.tesseract.android.TessBaseAPI;
-import android.app.Activity;
 import android.content.Intent;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
-import android.media.ExifInterface;
+import android.graphics.Rect;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.provider.MediaStore;
 import android.util.Log;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.Toast;
+
+import com.googlecode.leptonica.android.Pixa;
+import com.googlecode.tesseract.android.TessBaseAPI;
+import com.googlecode.tesseract.android.TessBaseAPI.PageSegMode;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -37,8 +24,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.concurrent.ExecutionException;
+
+import se.stny.thegridclient.util.SystemUiHider;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -47,37 +35,10 @@ import java.util.regex.Pattern;
  * @see SystemUiHider
  */
 public class upload extends Activity {
-    /**
-     * Whether or not the system UI should be auto-hidden after
-     * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
-     */
-    private static final boolean AUTO_HIDE = true;
-    /**
-     * If {@link #AUTO_HIDE} is set, the number of milliseconds to wait after
-     * user interaction before hiding the system UI.
-     */
-    private static final int AUTO_HIDE_DELAY_MILLIS = 3000;
-
-    /**
-     * If set, will toggle the system UI visibility upon interaction. Otherwise,
-     * will show the system UI visibility upon interaction.
-     */
-    private static final boolean TOGGLE_ON_CLICK = true;
-
-    /**
-     * The flags to pass to {@link SystemUiHider#getInstance}.
-     */
-    private static final int HIDER_FLAGS = SystemUiHider.FLAG_HIDE_NAVIGATION;
-
-    /**
-     * The instance of the {@link SystemUiHider} for this activity.
-     */
-    private SystemUiHider mSystemUiHider;
     public static final String DATA_PATH = Environment
             .getExternalStorageDirectory().toString() + "/TheGrid/";
     public static final String lang = "eng";
-    protected String _path;
-    private static final String TAG = "upload.java";
+    private static final String TAG = "Upload.java";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -101,35 +62,33 @@ public class upload extends Activity {
         // http://code.google.com/p/tesseract-ocr/downloads/list
         // This area needs work and optimization
 
-            try {
+        try {
 
-                AssetManager assetManager = getAssets();
-                InputStream in = assetManager.open("tessdata/" + lang + ".traineddata");
-                //GZIPInputStream gin = new GZIPInputStream(in);
-                OutputStream out = new FileOutputStream(DATA_PATH + "tessdata/" + lang + ".traineddata",false);
+            AssetManager assetManager = getAssets();
+            InputStream in = assetManager.open("tessdata/" + lang + ".traineddata");
+            //GZIPInputStream gin = new GZIPInputStream(in);
+            OutputStream out = new FileOutputStream(DATA_PATH + "tessdata/" + lang + ".traineddata", false);
 
-                // Transfer bytes from in to out
-                byte[] buf = new byte[1024];
-                int len;
-                //while ((lenf = gin.read(buff)) > 0) {
-                while ((len = in.read(buf)) > 0) {
-                    out.write(buf, 0, len);
-                }
-                in.close();
-                //gin.close();
-                out.close();
-
-                Log.v(TAG, "Copied " + lang + " traineddata");
-            } catch (IOException e) {
-                Log.e(TAG, "Was unable to copy " + lang + " traineddata " + e.toString());
+            // Transfer bytes from in to out
+            byte[] buf = new byte[1024];
+            int len;
+            //while ((lenf = gin.read(buff)) > 0) {
+            while ((len = in.read(buf)) > 0) {
+                out.write(buf, 0, len);
             }
+            in.close();
+            //gin.close();
+            out.close();
 
+            Log.v(TAG, "Copied " + lang + " traineddata");
+        } catch (IOException e) {
+            Log.e(TAG, "Was unable to copy " + lang + " traineddata " + e.toString());
+        }
 
 
         setContentView(R.layout.activity_upload);
 
 
-        _path = DATA_PATH + "/ocr.jpg";
         Intent intent = getIntent();
         String action = intent.getAction();
         String type = intent.getType();
@@ -144,82 +103,80 @@ public class upload extends Activity {
         }
     }
 
+    private String extract(Bitmap bmp) throws ExecutionException, InterruptedException {
+        String fin = "";
+        Log.i("info", String.format("Image size: %d x %d", bmp.getWidth(), bmp.getHeight()));
 
+        final TessBaseAPI baseApi = new TessBaseAPI();
+        baseApi.init(DATA_PATH, "eng");
+        baseApi.setPageSegMode(TessBaseAPI.PageSegMode.PSM_SINGLE_BLOCK);
+        baseApi.setImage(bmp);
+        Pixa allLinesPixa = baseApi.getTextlines();
+        Log.i("info", String.format("allLinesPixa.size() == %d", allLinesPixa.size()));
+        baseApi.setPageSegMode(PageSegMode.PSM_SINGLE_LINE);
+        Rect boxRect = allLinesPixa.getBoxRect(1);
+        baseApi.setRectangle(boxRect);
 
-    /**
-     * Touch listener to use for in-layout UI controls to delay hiding the
-     * system UI. This is to prevent the jarring behavior of controls going away
-     * while interacting with activity UI.
-     */
+        baseApi.setVariable(TessBaseAPI.VAR_CHAR_WHITELIST, "0123456789,");
 
+        baseApi.setRectangle(allLinesPixa.getBoxRect(3));
+        baseApi.setVariable(TessBaseAPI.VAR_CHAR_WHITELIST, "");
+        for (Rect curRect : allLinesPixa.getBoxRects()) {
+            baseApi.setRectangle(curRect);
+            String text = baseApi.getUTF8Text();
 
+            fin = fin + "\n" + text;
+        }
+        baseApi.end();
+        return fin;
+    }
 
-    /**
-     * Schedules a call to hide() in [delay] milliseconds, canceling any
-     * previously scheduled calls.
-     */
 
     private void decodeOCR(Intent intent)
     {
-        Bitmap bm;
-        Uri imageUri = (Uri) intent.getParcelableExtra(Intent.EXTRA_STREAM);
+        Bitmap bm = null;
+        String data = "";
+        Uri imageUri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
         if (imageUri != null) {
             try {
                 bm = BitmapFactory.decodeStream(getContentResolver()
                         .openInputStream(imageUri));
-                  bm = bm.copy(Bitmap.Config.ARGB_8888, true);
-                TessBaseAPI baseApi = new TessBaseAPI();
-                baseApi.setDebug(true);
 
-                baseApi.init(DATA_PATH, lang);
-                baseApi.setImage(bm);
-                String recognizedText = baseApi.getUTF8Text();
-                Log.v(TAG, "OCRED TEXT: " + recognizedText);
-                baseApi.end();
-                Pattern p = Pattern.compile("Max Time Portal Held (\\S+) days");
-                Matcher m = p.matcher(recognizedText);
-                while (m.find()) { // Find each match in turn; String can't do this.
-                    int days = Integer.parseInt(m.group(1)); // Access a submatch group; String can't do this.
 
-                    if(days < 3)
-                    {
-                        Log.v(TAG,"Not even Bronze guardian :(");
-                    }
-                    if (days >=3 && days < 10)
-                    {
-                        Log.v(TAG,"Bronze guardian :|");
-                    }
-                    if (days >=10 && days < 20)
-                    {
-                        Log.v(TAG,"Silver guardian :|");
-                    }
-                    if (days >=20 && days < 90)
-                    {
-                        Log.v(TAG,"Gold guardian :|");
-                    }
-                    if (days >=90 && days < 150)
-                    {
-                        Log.v(TAG,"Platinum guardian :)");
-                    }
-                    if (days >=150)
-                    {
-                        Log.v(TAG,"Onyx guardian :>");
-                    }
-                }
 
-                Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
-                emailIntent.setType("application/image");
-                emailIntent.putExtra(android.content.Intent.EXTRA_EMAIL, new String[]{"stefan.nygren@gmail.com"});
-                emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT,"[TGS-DEBUG-DATA] " + getDeviceName());
-                emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, recognizedText);
-                emailIntent.putExtra(Intent.EXTRA_STREAM, imageUri);
-                startActivity(Intent.createChooser(emailIntent, "Send mail..."));
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
 
         }
+        try {
+            bm = bm.copy(Bitmap.Config.ARGB_8888, true);
+        } catch (NullPointerException en) {
+            Log.i("info", Log.getStackTraceString(en));
+        }
+        try {
+
+            data = extract(bm);
+
+        } catch (ExecutionException ee) {
+            String msg = "Unable to initialize Tesseract data files";
+            if (ee.getCause() instanceof IOException)
+                msg = msg + " - IOException";
+            Log.i("info", Log.getStackTraceString(ee));
+
+        } catch (InterruptedException ie) {
+            Log.i("info", Log.getStackTraceString(ie));
+
+        }
+        Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
+        emailIntent.setType("application/image");
+        emailIntent.putExtra(android.content.Intent.EXTRA_EMAIL, new String[]{"stefan.nygren@gmail.com"});
+        emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "[TGS-DEBUG-DATA] " + getDeviceName());
+        emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, data);
+        emailIntent.putExtra(Intent.EXTRA_STREAM, imageUri);
+        startActivity(Intent.createChooser(emailIntent, "Send debug data..."));
     }
+
     private void debug(String string) {
         Context context = getApplicationContext();
         CharSequence text = string;
@@ -227,6 +184,7 @@ public class upload extends Activity {
         Toast toast = Toast.makeText(context, text, duration);
         toast.show();
     }
+
     private String getDeviceName() {
         String manufacturer = Build.MANUFACTURER;
         String model = Build.MODEL;
@@ -236,7 +194,6 @@ public class upload extends Activity {
             return capitalize(manufacturer) + " " + model;
         }
     }
-
 
     private String capitalize(String s) {
         if (s == null || s.length() == 0) {
