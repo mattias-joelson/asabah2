@@ -5,10 +5,7 @@
     <!-- The primary full-screen view. This can be replaced with whatever view
          is needed to present your content, e.g. VideoView, SurfaceView,
          TextureView, etc. -->
-    <TextView android:id="@+id/fullscreen_content" android:layout_width="match_parent"
-        android:layout_height="match_parent" android:keepScreenOn="true" android:textColor="#33b5e5"
-        android:textStyle="bold" android:textSize="50sp" android:gravity="center"
-        android:text="@string/dummy_content" />
+
 
     <!-- This FrameLayout insets its children based on system windows using
          android:fitsSystemWindows. -->
@@ -22,6 +19,20 @@
             tools:ignore="UselessParent">
 
         </LinearLayout>
+
+        <Button
+            android:id="@+id/button2"
+            android:layout_width="161dp"
+            android:layout_height="72dp"
+            android:layout_gravity="right|center_vertical"
+            android:text="Manual login" />
+
+        <Button
+            android:id="@+id/button"
+            android:layout_width="161dp"
+            android:layout_height="72dp"
+            android:layout_gravity="left|center_vertical"
+            android:text="Login with Pin" />
     </FrameLayout>
 
 </FrameLayout>
