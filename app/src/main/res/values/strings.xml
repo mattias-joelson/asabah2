@@ -3,6 +3,9 @@
 
     <string name="app_name">The Grid Client</string>
     <string name="dummy_content">This space is intentionally left empty.</string>
-
+    <string name="title_activity_login">LoginActivity</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_user">user</string>
 
 </resources>

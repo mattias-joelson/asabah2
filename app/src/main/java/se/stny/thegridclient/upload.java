@@ -27,6 +27,7 @@ import java.io.OutputStream;
 import java.util.concurrent.ExecutionException;
 
 import se.stny.thegridclient.util.SystemUiHider;
+import se.stny.thegridclient.util.userSettings;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -39,11 +40,15 @@ public class upload extends Activity {
             .getExternalStorageDirectory().toString() + "/TheGrid/";
     public static final String lang = "eng";
     private static final String TAG = "Upload.java";
+    userSettings prefs;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        prefs = new userSettings(getApplicationContext());
         String[] paths = new String[] { DATA_PATH, DATA_PATH + "tessdata/" };
-
+        debug("Status:" + prefs.isLoggedIn());
+        prefs.checkLogin(true, false);
+        if (!prefs.isLoggedIn())
         for (String path : paths) {
             File dir = new File(path);
             if (!dir.exists()) {
@@ -175,6 +180,10 @@ public class upload extends Activity {
         emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, data);
         emailIntent.putExtra(Intent.EXTRA_STREAM, imageUri);
         startActivity(Intent.createChooser(emailIntent, "Send debug data..."));
+        parseTextToVars(data);
+    }
+
+    private void parseTextToVars(String data) {
     }
 
     private void debug(String string) {
