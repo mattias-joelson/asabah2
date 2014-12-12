@@ -6,11 +6,12 @@
 
     <!-- Email Label -->
     <TextView
+        android:id="@+id/lblAgentName"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="5dip"
         android:singleLine="true"
-        android:text="Username (Enter 'test')" />
+        android:text="Agent" />
 
     <!-- Email input text -->
     <EditText
@@ -21,10 +22,11 @@
 
     <!-- Password Label -->
     <TextView
+        android:id="@+id/lblPinKey"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="5dip"
-        android:text="Password (Enter 'test')" />
+        android:text="key/pin" />
 
     <!-- Password input text -->
     <EditText
@@ -36,10 +38,41 @@
         android:singleLine="true" />
 
     <!-- Login button -->
-    <Button
-        android:id="@+id/btnLogin"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="Login" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/head"
+        android:orientation="horizontal">
 
+        <LinearLayout
+            android:id="@+id/left"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/btnLoginKey"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="Login With key" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/right"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/btnLoginPin"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="Login with pin" />
+        </LinearLayout>
+
+    </LinearLayout>
 </LinearLayout>

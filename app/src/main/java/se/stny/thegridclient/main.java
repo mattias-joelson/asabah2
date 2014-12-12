@@ -4,11 +4,16 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.StrictMode;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import org.json.JSONObject;
+
+import se.stny.thegridclient.util.HttpClient;
 import se.stny.thegridclient.util.userSettings;
 
 public class main extends Activity {
@@ -17,7 +22,8 @@ public class main extends Activity {
     EditText txtUsername, txtPassword;
 
     // login button
-    Button btnLogin;
+    Button btnLoginKey;
+    Button btnLoginPin;
 
     // Alert Dialog Manager
 
@@ -29,7 +35,10 @@ public class main extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        if (android.os.Build.VERSION.SDK_INT > 9) {
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+            StrictMode.setThreadPolicy(policy);
+        }
         // Session Manager
         session = new userSettings(getApplicationContext());
 
@@ -41,11 +50,12 @@ public class main extends Activity {
         session.checkLogin(false, true);
 
         // Login button
-        btnLogin = (Button) findViewById(R.id.btnLogin);
+        btnLoginKey = (Button) findViewById(R.id.btnLoginKey);
+        btnLoginPin = (Button) findViewById(R.id.btnLoginKey);
 
 
         // Login button click event
-        btnLogin.setOnClickListener(new View.OnClickListener() {
+        btnLoginKey.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View arg0) {
@@ -53,28 +63,29 @@ public class main extends Activity {
                 String username = txtUsername.getText().toString();
                 String password = txtPassword.getText().toString();
 
-                // Check if username, password is filled               
+                // Check if username, password is filled
                 if (username.trim().length() > 0 && password.trim().length() > 0) {
-                    // For testing puspose username, password is checked with sample data
-                    // username = test
-                    // password = test
-                    if (username.equals("test") && password.equals("test")) {
+                    HttpClient client = new HttpClient("userinfo");
+                    client.addHttpPost("user", password);
+                    JSONObject tmp = client.getJSONFromUrl();
+                    debug(tmp.toString());
+                    Log.i("request done", tmp.toString());
 
-                        // Creating user login session
-                        // For testing i am stroing name, email as follow
-                        // Use user real data
-                        session.createLoginSession("Android Hive", "anroidhive@gmail.com");
 
-                        // Staring MainActivity
-                        Intent i = new Intent(getApplicationContext(), user.class);
-                        startActivity(i);
-                        finish();
+                    // Staring MainActivity
+                    Intent i = new Intent(getApplicationContext(), user.class);
+                    startActivity(i);
+                    finish();
+                    if (true) {
+
 
                     } else {
                         // username / password doesn't match
-                        debug("Wrong username/password)");
+                        debug("Wrong username/key)");
                     }
-                } else {
+                } else
+
+                {
                     // user didn't entered username or password
                     // Show alert asking him to enter the details
                     debug("please provide userinfo");
@@ -82,6 +93,8 @@ public class main extends Activity {
                 }
 
             }
+
+
         });
     }
 
