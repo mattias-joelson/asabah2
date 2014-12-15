@@ -174,13 +174,13 @@ public class upload extends Activity {
         emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, data);
         emailIntent.putExtra(Intent.EXTRA_STREAM, imageUri);
         startActivity(Intent.createChooser(emailIntent, "Send debug data..."));
-        parseTextToVars(data);
+        //parseTextToVars(data);
     }
 
 
-    private void parseTextToVars(String data) {
+    //private void parseTextToVars(String data) {
 
-    }
+    //}
 
     private void debug(String string) {
         Context context = getApplicationContext();

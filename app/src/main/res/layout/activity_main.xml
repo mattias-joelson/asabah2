@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="5dip"
         android:singleLine="true"
-        android:text="Agent"
+        android:text="@string/lblAgent"
         android:textColor="#000000" />
 
     <!-- Email input text -->
@@ -20,6 +20,8 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="10dip"
+        android:inputType="text"
+        android:text=""
         android:textColor="#000000" />
 
     <!-- Password Label -->
@@ -39,13 +41,14 @@
         android:layout_marginBottom="20dip"
         android:password="false"
         android:singleLine="true"
+        android:text="1234567"
         android:textColor="#000000" />
 
     <!-- Login button -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/head"
+
         android:orientation="horizontal">
 
         <LinearLayout
@@ -60,7 +63,7 @@
                 android:id="@+id/btnLoginKey"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:text="Login With key" />
+                android:text="@string/LoginWIthKey" />
         </LinearLayout>
 
         <LinearLayout
@@ -75,7 +78,7 @@
                 android:id="@+id/btnLoginPin"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:text="Login with pin" />
+                android:text="@string/lblLoginPinKey" />
         </LinearLayout>
 
     </LinearLayout>

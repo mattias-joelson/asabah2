@@ -13,9 +13,9 @@ import se.stny.thegridclient.user;
 
 public class userSettings {
     // User name (make variable public to access from outside)
-    public static final String KEY_NAME = "name";
+    public static final String AGENT_NAME = "AGENT_NAME";
     // Email address (make variable public to access from outside)
-    public static final String IMAGE_URL = "email";
+    public static final String IMAGE_URL = "IMAGE_URL";
     // Sharedpref file name
     private static final String PREF_NAME = "TheGridClientPrefs";
     // All Shared Preferences Keys
@@ -40,15 +40,15 @@ public class userSettings {
     /**
      * Create login session
      */
-    public void createLoginSession(String name, String email) {
+    public void createLoginSession(String name, String profile_pic) {
         // Storing login value as TRUE
         editor.putBoolean(IS_LOGIN, true);
 
         // Storing name in pref
-        editor.putString(KEY_NAME, name);
+        editor.putString(AGENT_NAME, name);
 
         // Storing email in pref
-        editor.putString(IMAGE_URL, email);
+        editor.putString(IMAGE_URL, profile_pic);
 
         // commit changes
         editor.commit();
@@ -97,7 +97,7 @@ public class userSettings {
     public HashMap<String, String> getUserDetails() {
         HashMap<String, String> user = new HashMap<>();
         // user name
-        user.put(KEY_NAME, pref.getString(KEY_NAME, null));
+        user.put(AGENT_NAME, pref.getString(AGENT_NAME, null));
 
         // user email id
         user.put(IMAGE_URL, pref.getString(IMAGE_URL, null));

@@ -20,16 +20,21 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class theGridClient extends AsyncTask<Void, Void, JSONObject> {
     protected final String TAG = "HttpClient";
+    private String API_KEY = "";
     private String URL;
 
 
-    private JSONObject result = null;
+    volatile private JSONObject result = null;
+    private volatile runState myState;
     private List<NameValuePair> nameValuePairs = new ArrayList<>(2);
 
-    public theGridClient(String URL) {
+    public theGridClient(String URL, String API_KEY) {
         this.URL = "http://the-grid.org/api/?" + URL;
+        this.API_KEY = API_KEY;
+        myState = runState.NOT_STARTED;
 
     }
 
@@ -55,15 +60,26 @@ public class theGridClient extends AsyncTask<Void, Void, JSONObject> {
         return sb.toString();
     }
 
+    public runState getState() {
+        return this.myState;
+    }
+
     public void addHttpPost(String id, String Val) {
         nameValuePairs.add(new BasicNameValuePair(id, Val));
     }
 
     public JSONObject getJSONFromUrl() {
-        int i = 0;
         this.execute();
-        while (!this.isCancelled()) {
-            i = i + 1;
+        try {
+            while (true) {
+                if (!(this.myState == runState.NOT_STARTED)) break;
+
+            }
+            while (true) {
+                if (!(this.myState == runState.RUNNING)) break;
+            }
+        } catch (Exception e) {
+            Log.e(TAG, e.getMessage());
         }
         return result;
     }
@@ -72,13 +88,13 @@ public class theGridClient extends AsyncTask<Void, Void, JSONObject> {
 
     protected JSONObject doInBackground(Void... params) {
         try {
-
+            myState = runState.RUNNING;
             DefaultHttpClient httpclient = new DefaultHttpClient();
             HttpPost httpPostRequest = new HttpPost(URL);
 
             // Set HTTP parameters
             httpPostRequest.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-            httpPostRequest.setHeader("X-THEGRID_API_KEY", "");
+            httpPostRequest.setHeader("X-THEGRID_API_KEY", this.API_KEY);
 
 
             long t = System.currentTimeMillis();
@@ -105,10 +121,11 @@ public class theGridClient extends AsyncTask<Void, Void, JSONObject> {
             }
 
         } catch (Exception e) {
-            Log.i(TAG, e.getMessage());
+            myState = runState.ERROR;
             e.printStackTrace();
         }
         if (result != null) {
+            myState = runState.FINISHED;
             return result;
         } else {
             return null;
@@ -117,5 +134,12 @@ public class theGridClient extends AsyncTask<Void, Void, JSONObject> {
 
     protected void onPostExecute(JSONObject jObject) {
         result = jObject;
+    }
+
+    public enum runState {
+        NOT_STARTED, RUNNING, FINISHED, ERROR
+
+
+
     }
 }

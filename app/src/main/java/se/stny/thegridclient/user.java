@@ -1,25 +1,39 @@
 package se.stny.thegridclient;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import se.stny.thegridclient.util.DownloadImageTask;
 import se.stny.thegridclient.util.userSettings;
 
 public class user extends ActionBarActivity {
 
-    @Override
+
+    private userSettings ses;
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user);
+        ses = new userSettings(getApplicationContext());
+
+        debug(ses.getUserDetails().get(userSettings.IMAGE_URL));
+        ((TextView) findViewById(R.id.agentName)).setText(ses.getUserDetails().get(userSettings.AGENT_NAME));
+        new DownloadImageTask((ImageView) findViewById(R.id.img_profile))
+                .execute(ses.getUserDetails().get(userSettings.IMAGE_URL).replace("sz=50", "sz=200"));
+
         Button button = (Button) findViewById(R.id.button);
+        button.setText("logout");
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                userSettings sess = new userSettings(getApplicationContext());
-                sess.logoutUser();
+                ses.logoutUser();
 
             }
 
@@ -48,5 +62,12 @@ public class user extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void debug(String string) {
+        Context context = getApplicationContext();
+        int duration = Toast.LENGTH_SHORT;
+        Toast toast = Toast.makeText(context, string, duration);
+        toast.show();
     }
 }

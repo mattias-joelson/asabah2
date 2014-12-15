@@ -72,29 +72,39 @@ public class main extends Activity {
 
                 // Check if username, password is filled
                 if (username.trim().length() > 0 && password.trim().length() > 0) {
-                    theGridClient client = new theGridClient("userinfo");
+                    theGridClient client = new theGridClient("userinfo", getString(R.string.API_KEY));
                     client.addHttpPost("user", password);
                     JSONObject tmp = client.getJSONFromUrl();
-                    debug(tmp.toString());
-                    Log.i("request done", tmp.toString());
-                    try {
-                        if (tmp.get("status") == "200") {
-                            if (tmp.get("codename").toString().toLowerCase().equals(username.toLowerCase())) {
-                                Intent i = new Intent(getApplicationContext(), user.class);
-                                startActivity(i);
-                                finish();
+                    if (client.getState() != theGridClient.runState.ERROR) {
+                        debug(tmp.toString());
+                        Log.i("request done", tmp.toString());
+                        try {
+                            int status = tmp.getInt("status");
+                            if (status == 200) {
+
+                                if (tmp.get("codename").toString().toLowerCase().equals(username.toLowerCase())) {
+                                    session.createLoginSession(tmp.getString("codename"), tmp.getString("profilepic").replace("\\/", "/"));
+                                    Intent i = new Intent(getApplicationContext(), user.class);
+                                    startActivity(i);
+                                    finish();
+
+                                } else {
+                                    // username / password doesn't match
+                                    session.logoutUser();
+                                    debug("Wrong username/key)");
+                                }
 
                             } else {
-                                // username / password doesn't match
-                                debug("Wrong username/key)");
+                                debug("Data request failed with status: " + tmp.get("status"));
+                                debug("Data request failed with error: " + tmp.get("error"));
                             }
-
+                        } catch (JSONException ej) {
+                            Log.e("main", ej.getMessage());
+                            ej.printStackTrace();
                         }
-                    } catch (JSONException ej) {
-                        Log.e("main", ej.getMessage());
-                        ej.printStackTrace();
-                    }
 
+                    } else
+                        debug("ERROR STATE");
 
 
                     // Staring MainActivity
