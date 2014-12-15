@@ -1,5 +1,6 @@
 package se.stny.thegridclient.util;
 
+
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -19,14 +20,15 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HttpClient extends AsyncTask<Void, Void, JSONObject> {
-    private final String TAG = "HttpClient";
+public class theGridClient extends AsyncTask<Void, Void, JSONObject> {
+    protected final String TAG = "HttpClient";
     private String URL;
 
-    private JSONObject result = null;
-    private List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
 
-    public HttpClient(String URL) {
+    private JSONObject result = null;
+    private List<NameValuePair> nameValuePairs = new ArrayList<>(2);
+
+    public theGridClient(String URL) {
         this.URL = "http://the-grid.org/api/?" + URL;
 
     }
@@ -36,10 +38,10 @@ public class HttpClient extends AsyncTask<Void, Void, JSONObject> {
         BufferedReader reader = new BufferedReader(new InputStreamReader(is));
         StringBuilder sb = new StringBuilder();
 
-        String line = null;
+        String line;
         try {
             while ((line = reader.readLine()) != null) {
-                sb.append(line + "\n");
+                sb.append(line);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -58,14 +60,19 @@ public class HttpClient extends AsyncTask<Void, Void, JSONObject> {
     }
 
     public JSONObject getJSONFromUrl() {
+        int i = 0;
         this.execute();
+        while (!this.isCancelled()) {
+            i = i + 1;
+        }
         return result;
     }
 
     @Override
-    protected JSONObject doInBackground(Void... params) {
 
+    protected JSONObject doInBackground(Void... params) {
         try {
+
             DefaultHttpClient httpclient = new DefaultHttpClient();
             HttpPost httpPostRequest = new HttpPost(URL);
 
@@ -75,7 +82,7 @@ public class HttpClient extends AsyncTask<Void, Void, JSONObject> {
 
 
             long t = System.currentTimeMillis();
-            HttpResponse response = (HttpResponse) httpclient.execute(httpPostRequest);
+            HttpResponse response = httpclient.execute(httpPostRequest);
             Log.i(TAG, "HTTPResponse received in [" + (System.currentTimeMillis() - t) + "ms]");
 
             HttpEntity entity = response.getEntity();
@@ -87,21 +94,25 @@ public class HttpClient extends AsyncTask<Void, Void, JSONObject> {
                 // convert content stream to a String
                 String resultString = convertStreamToString(instream);
                 instream.close();
+                resultString = "[" + resultString.replace("\n", "") + "]";
                 resultString = resultString.substring(1, resultString.length() - 1); // remove wrapping "[" and "]"
-                resultString = resultString.replace("\n", "");
-                JSONObject jsonObjRecv = new JSONObject(resultString);
+                result = new JSONObject(resultString);
 
                 // Raw DEBUG output of our received JSON object:
-                Log.i(TAG, "<JSONObject>\n" + jsonObjRecv.toString() + "\n</JSONObject>");
+                Log.i(TAG, "<JSONObject>\n" + result.toString() + "\n</JSONObject>");
 
-                return jsonObjRecv;
+
             }
 
         } catch (Exception e) {
             Log.i(TAG, e.getMessage());
             e.printStackTrace();
         }
-        return null;
+        if (result != null) {
+            return result;
+        } else {
+            return null;
+        }
     }
 
     protected void onPostExecute(JSONObject jObject) {

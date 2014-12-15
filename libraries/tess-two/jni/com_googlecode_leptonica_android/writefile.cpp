@@ -87,7 +87,7 @@ jbyteArray Java_com_googlecode_leptonica_android_WriteFile_nativeWriteMem(JNIEnv
     return NULL;
   }
 
-  // TODO Can we just use the byte array directly?
+
   jbyteArray array = env->NewByteArray(size);
   env->SetByteArrayRegion(array, 0, size, (jbyte *) data);
 

@@ -34,6 +34,7 @@ public class userSettings {
         this._context = context;
         pref = _context.getSharedPreferences(PREF_NAME, PRIVATE_MODE);
         editor = pref.edit();
+
     }
 
     /**
@@ -58,14 +59,6 @@ public class userSettings {
      * If false it will redirect user to login page
      * Else won't do anything
      */
-
-    public void checkLoggedIn() {
-
-    }
-
-    public void checkLoggedOut() {
-
-    }
 
     public void checkLogin(boolean redirectLoggedOut, boolean redirectLoggedIn) {
         // Check login status
@@ -102,7 +95,7 @@ public class userSettings {
      * Get stored session data
      */
     public HashMap<String, String> getUserDetails() {
-        HashMap<String, String> user = new HashMap<String, String>();
+        HashMap<String, String> user = new HashMap<>();
         // user name
         user.put(KEY_NAME, pref.getString(KEY_NAME, null));
 

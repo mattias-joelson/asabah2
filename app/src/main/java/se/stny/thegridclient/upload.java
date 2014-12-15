@@ -26,21 +26,16 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.concurrent.ExecutionException;
 
-import se.stny.thegridclient.util.SystemUiHider;
 import se.stny.thegridclient.util.userSettings;
 
-/**
- * An example full-screen activity that shows and hides the system UI (i.e.
- * status bar and navigation/system bar) with user interaction.
- *
- * @see SystemUiHider
- */
+
 public class upload extends Activity {
     public static final String DATA_PATH = Environment
             .getExternalStorageDirectory().toString() + "/TheGrid/";
     public static final String lang = "eng";
     private static final String TAG = "Upload.java";
     userSettings prefs;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -104,6 +99,8 @@ public class upload extends Activity {
                 debug("returning from handler");
             }
         } else {
+            debug("how the hell did i get here?");
+
 // Handle other intents, such as being started from the home screen
         }
     }
@@ -136,7 +133,7 @@ public class upload extends Activity {
         return fin;
     }
 
-
+    @SuppressWarnings("")
     private void decodeOCR(Intent intent)
     {
         Bitmap bm = null;
@@ -155,24 +152,21 @@ public class upload extends Activity {
 
         }
         try {
+            //noinspection
+            assert bm != null;
             bm = bm.copy(Bitmap.Config.ARGB_8888, true);
-        } catch (NullPointerException en) {
+        } catch (Exception en) {
             Log.i("info", Log.getStackTraceString(en));
         }
         try {
 
             data = extract(bm);
 
-        } catch (ExecutionException ee) {
-            String msg = "Unable to initialize Tesseract data files";
-            if (ee.getCause() instanceof IOException)
-                msg = msg + " - IOException";
+        } catch (Exception ee) {
+
             Log.i("info", Log.getStackTraceString(ee));
-
-        } catch (InterruptedException ie) {
-            Log.i("info", Log.getStackTraceString(ie));
-
         }
+
         Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
         emailIntent.setType("application/image");
         emailIntent.putExtra(android.content.Intent.EXTRA_EMAIL, new String[]{"stefan.nygren@gmail.com"});
@@ -183,14 +177,15 @@ public class upload extends Activity {
         parseTextToVars(data);
     }
 
+
     private void parseTextToVars(String data) {
+
     }
 
     private void debug(String string) {
         Context context = getApplicationContext();
-        CharSequence text = string;
         int duration = Toast.LENGTH_SHORT;
-        Toast toast = Toast.makeText(context, text, duration);
+        Toast toast = Toast.makeText(context, string, duration);
         toast.show();
     }
 
