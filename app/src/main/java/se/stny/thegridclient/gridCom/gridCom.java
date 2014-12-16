@@ -1,4 +1,4 @@
-package se.stny.thegridclient.util;
+package se.stny.thegridclient.gridCom;
 
 
 import android.os.AsyncTask;
@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class theGridClient extends AsyncTask<Void, Void, JSONObject> {
+public class gridCom extends AsyncTask<Void, Void, JSONObject> {
     protected final String TAG = "HttpClient";
     private String API_KEY = "";
     private String URL;
@@ -31,7 +31,7 @@ public class theGridClient extends AsyncTask<Void, Void, JSONObject> {
     private volatile runState myState;
     private List<NameValuePair> nameValuePairs = new ArrayList<>(2);
 
-    public theGridClient(String URL, String API_KEY) {
+    public gridCom(String URL, String API_KEY) {
         this.URL = "http://the-grid.org/api/?" + URL;
         this.API_KEY = API_KEY;
         myState = runState.NOT_STARTED;
@@ -68,6 +68,10 @@ public class theGridClient extends AsyncTask<Void, Void, JSONObject> {
         nameValuePairs.add(new BasicNameValuePair(id, Val));
     }
 
+    public void addAllHttpPosts(List<NameValuePair> pars) {
+        nameValuePairs = pars;
+    }
+
     public JSONObject getJSONFromUrl() {
         this.execute();
         try {
@@ -89,7 +93,7 @@ public class theGridClient extends AsyncTask<Void, Void, JSONObject> {
     protected JSONObject doInBackground(Void... params) {
         try {
             myState = runState.RUNNING;
-            DefaultHttpClient httpclient = new DefaultHttpClient();
+            DefaultHttpClient httpClient = new DefaultHttpClient();
             HttpPost httpPostRequest = new HttpPost(URL);
 
             // Set HTTP parameters
@@ -98,7 +102,7 @@ public class theGridClient extends AsyncTask<Void, Void, JSONObject> {
 
 
             long t = System.currentTimeMillis();
-            HttpResponse response = httpclient.execute(httpPostRequest);
+            HttpResponse response = httpClient.execute(httpPostRequest);
             Log.i(TAG, "HTTPResponse received in [" + (System.currentTimeMillis() - t) + "ms]");
 
             HttpEntity entity = response.getEntity();

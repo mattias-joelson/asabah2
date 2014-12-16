@@ -1,8 +1,18 @@
 package se.stny.thegridclient.ocr;
 
-import org.json.JSONObject;
+public interface ocrCallback<Found, Result> {
 
 
-public interface ocrCallback {
-    public abstract void onFinishRecognition(JSONObject recognizedText);
+    void ocrStart();
+
+    void ocrRunning();
+
+    void ocrFinishing();
+
+    void ocrError();
+
+    void ocrCompleted(Result result);
+
+    void ocrUpdate(Found val);
+
 }

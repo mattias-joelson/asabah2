@@ -1,7 +1,6 @@
 package se.stny.thegridclient.ocr;
 
-import android.app.ProgressDialog;
-import android.content.Context;
+
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
@@ -11,14 +10,18 @@ import android.util.Log;
 import com.googlecode.leptonica.android.Pixa;
 import com.googlecode.tesseract.android.TessBaseAPI;
 
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONObject;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
 
-import se.stny.thegridclient.R;
+import se.stny.thegridclient.util.tgcDataClass;
 
 public class ocrScanner extends AsyncTask<JSONObject, String, JSONObject> {
     private final String TAG = "ocrScanner.java";
@@ -27,42 +30,35 @@ public class ocrScanner extends AsyncTask<JSONObject, String, JSONObject> {
     private volatile Bitmap Image;
     private volatile String DATA_PATH;
     private volatile TessBaseAPI base;
-    private Context context;
-    private ocrCallback callback;
-    private ProgressDialog progress;
+    private ocrCallback<Integer, JSONObject> callback;
 
+    private volatile tgcDataClass lines[];
+    private List<NameValuePair> nameValuePairs = new ArrayList<>(2);
 
-    public ocrScanner(String DATA_PATH, Bitmap BMP, AssetManager assets, String lang, Context context, ocrCallback callback) {
+    public ocrScanner(String DATA_PATH, Bitmap BMP, AssetManager assets, String lang, tgcDataClass lines[], ocrCallback<Integer, JSONObject> callback) {
         this.DATA_PATH = DATA_PATH;
         this.Image = BMP;
         this.Assets = assets;
-        this.context = context;
         this.callback = callback;
         this.lang = lang;
+        this.lines = lines;
 
     }
 
     protected void onPreExecute() {
-        this.progress = new ProgressDialog(this.context);
-        this.progress.setIndeterminate(true);
-        this.progress.setIndeterminateDrawable(context.getResources().getDrawable(R.drawable.spinner_loading));
-        this.progress.setMessage("Converting stats.");
-        this.progress.setProgress(0);
-        this.progress.show();
+        this.callback.ocrStart();
+
         try {
             InputStream in = Assets.open("OcrData/" + lang + ".traineddata");
-            //GZIPInputStream gin = new GZIPInputStream(in);
             OutputStream out = new FileOutputStream(DATA_PATH + "OcrData/" + lang + ".traineddata", false);
 
             // Transfer bytes from in to out
             byte[] buf = new byte[1024];
             int len;
-            //while ((lenf = gin.read(buff)) > 0) {
             while ((len = in.read(buf)) > 0) {
                 out.write(buf, 0, len);
             }
             in.close();
-            //gin.close();
             out.close();
 
             Log.v(this.TAG, "Copied " + lang + " traineddata");
@@ -76,7 +72,7 @@ public class ocrScanner extends AsyncTask<JSONObject, String, JSONObject> {
 
     protected JSONObject doInBackground(JSONObject... params) {
         JSONObject res = new JSONObject();
-
+        callback.ocrRunning();
         base.setPageSegMode(TessBaseAPI.PageSegMode.PSM_SINGLE_BLOCK);
 
         Pixa allLinesPixa = base.getTextlines();
@@ -91,55 +87,60 @@ public class ocrScanner extends AsyncTask<JSONObject, String, JSONObject> {
         base.setVariable(TessBaseAPI.VAR_CHAR_WHITELIST, "");
         for (Rect curRect : allLinesPixa.getBoxRects()) {
             base.setRectangle(curRect);
-            res = translateToRightValue(res, base.getUTF8Text());
+            translateToRightValue(base.getUTF8Text().replaceAll(",", ""));
 
         }
-        base.end();
+
         return res;
     }
 
+    protected void onPostExecute(ArrayList finish) {
+        for (tgcDataClass line : this.lines) {
+            {
+                if (!line.checkUsed()) {
+                    try {
+                        nameValuePairs.add(new BasicNameValuePair(line.getGridText(), "0"));
+                    } catch (Exception e) {
+                        Log.e(TAG, e.getMessage());
+                        Log.e(TAG, e.getCause().toString());
+                    }
 
-    private JSONObject translateToRightValue(JSONObject res, String str) {
-        try {
-            base.setVariable(TessBaseAPI.VAR_CHAR_WHITELIST, "0123456789,");
 
-
-            if (str.startsWith(context.getString(R.string.upv))) {
-                res.put(context.getString(R.string.grid_unique_visits), base.getUTF8Text().split("\\s"));
-            } else if (str.startsWith(context.getString(R.string.portals_discovered))) {
-                res.put(context.getString(R.string.grid_portals_discovered), base.getUTF8Text().split("\\s"));
-            } else if (str.startsWith(context.getString(R.string.portals_neutralized))) {
-                res.put(context.getString(R.string.grid_portalsneut), base.getUTF8Text().split("\\s"));
+                }
             }
-            /*
-            "statcat_innovator":"Select the highest level you had on November 15, 2014 11:59pm PST",
-                    "statcat_dis_xm":"XM Collected",
-                    "statcat_hac_hacks":"Hacks",
-                    "statcat_bui_resdeploy":"Resonators Deployed",
-                    "statcat_con_linkscreated":"Links Created",
-                    "statcat_min_fieldscreated":"Fields Created",
-                    "statcat_bui_mucap":"MU Captured",
-                    "statcat_bui_longlink":"Longest Link",
-                    "statcat_bui_lafield":"Largest Control Field",
-                    "statcat_bui_xmrecharged":"XM Recharged",
-                    "statcat_bui_portalcap":"Portals Captured",
-                    "statcat_bui_unportalcap":"Unique Portals Captured",
-                    "statcat_pur_resdestroyed":"Resonators Destroyed",
-                    "statcat_pur_linksdestroyed":"Links Destroyed",
-                    "statcat_pur_fieldsdestroyed":"Fields Destroyed",
-                    "statcat_hea_distance":"Distance Walked",
-                    "statcat_gua_maxtime":"Time Portal Held",
-                    "statcat_def_linkmain":"Time Link Maintained",
-                    "statcat_def_linkxdays":"Link Length*Days",
-                    "statcat_def_fieldheld":"Time Field Held",
-                    "statcat_def_muxdays":"MUs*Days"
-*/
+        }
+        callback.ocrCompleted(finish);
+        base.end();
+        Log.e(TAG, "TETRA");
+    }
+
+
+    private void translateToRightValue(String str) {
+        try {
+            this.base.setVariable(TessBaseAPI.VAR_CHAR_WHITELIST, "0123456789,");
+
+            for (int i = 0; i < this.lines.length; i++) {
+                if (str.startsWith(lines[i].getIngressText())) {
+                    this.base.setVariable(TessBaseAPI.VAR_CHAR_WHITELIST, "0123456789,M");
+                    String[] stringArray = this.base.getUTF8Text().split("\\s");
+                    int pos = this.lines[i].getSplitPos() < 0 ? stringArray.length + this.lines[i].getSplitPos() : this.lines[i].getSplitPos();
+
+                    this.nameValuePairs.add(new BasicNameValuePair(this.lines[i].getGridText(), stringArray[pos]));
+                    this.base.setVariable(TessBaseAPI.VAR_CHAR_WHITELIST, "");
+                    if (this.lines[i].hasSibling()) {
+                        this.lines[this.lines[i].getSibling()].setAsUsed();
+                        this.callback.ocrUpdate(1);
+                    }
+                    this.lines[i].setAsUsed();
+                    this.callback.ocrUpdate(1);
+                }
+            }
 
         } catch (Exception e) {
             Log.e(TAG, e.getMessage());
         }
         base.setVariable(TessBaseAPI.VAR_CHAR_WHITELIST, "");
-        return res;
+
     }
 
 

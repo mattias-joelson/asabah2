@@ -16,22 +16,16 @@ import android.widget.Toast;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import se.stny.thegridclient.util.theGridClient;
+import se.stny.thegridclient.gridCom.gridCom;
 import se.stny.thegridclient.util.userSettings;
 
 public class main extends Activity {
 
-    // Email, password edittext
     EditText txtUsername, txtPassword;
 
-    // login button
     Button btnLoginKey;
     Button btnLoginPin;
 
-    // Alert Dialog Manager
-
-
-    // Session Manager Class
     userSettings session;
 
     @Override
@@ -72,10 +66,10 @@ public class main extends Activity {
 
                 // Check if username, password is filled
                 if (username.trim().length() > 0 && password.trim().length() > 0) {
-                    theGridClient client = new theGridClient("userinfo", getString(R.string.API_KEY));
+                    gridCom client = new gridCom("userinfo", getString(R.string.API_KEY));
                     client.addHttpPost("user", password);
                     JSONObject tmp = client.getJSONFromUrl();
-                    if (client.getState() != theGridClient.runState.ERROR) {
+                    if (client.getState() != gridCom.runState.ERROR) {
                         debug(tmp.toString());
                         Log.i("request done", tmp.toString());
                         try {
@@ -115,7 +109,7 @@ public class main extends Activity {
                 {
                     // user didn't entered username or password
                     // Show alert asking him to enter the details
-                    debug("please provide userinfo");
+                    debug("please provide User Information");
 
                 }
 

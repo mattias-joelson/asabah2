@@ -21,7 +21,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="10dip"
         android:inputType="text"
-        android:text=""
+        android:text="THE-GRID-CLIENT"
         android:textColor="#000000" />
 
     <!-- Password Label -->
@@ -39,15 +39,17 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="20dip"
+        android:inputType="text"
         android:password="false"
         android:singleLine="true"
-        android:text="1234567"
+        android:text="653aef2d384cf215d8c593b2cae92697"
         android:textColor="#000000" />
 
     <!-- Login button -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:baselineAligned="false"
 
         android:orientation="horizontal">
 

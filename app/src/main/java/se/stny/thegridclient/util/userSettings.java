@@ -12,21 +12,15 @@ import se.stny.thegridclient.main;
 import se.stny.thegridclient.user;
 
 public class userSettings {
-    // User name (make variable public to access from outside)
+
     public static final String AGENT_NAME = "AGENT_NAME";
-    // Email address (make variable public to access from outside)
     public static final String IMAGE_URL = "IMAGE_URL";
-    // Sharedpref file name
     private static final String PREF_NAME = "TheGridClientPrefs";
-    // All Shared Preferences Keys
     private static final String IS_LOGIN = "IsLoggedIn";
-    // Shared Preferences
+
     SharedPreferences pref;
-    // Editor for Shared preferences
     Editor editor;
-    // Context
     Context _context;
-    // Shared pref mode
     int PRIVATE_MODE = 0;
 
     // Constructor
@@ -41,49 +35,25 @@ public class userSettings {
      * Create login session
      */
     public void createLoginSession(String name, String profile_pic) {
-        // Storing login value as TRUE
+
         editor.putBoolean(IS_LOGIN, true);
-
-        // Storing name in pref
         editor.putString(AGENT_NAME, name);
-
-        // Storing email in pref
         editor.putString(IMAGE_URL, profile_pic);
-
-        // commit changes
         editor.commit();
     }
 
-    /**
-     * Check login method wil check user login status
-     * If false it will redirect user to login page
-     * Else won't do anything
-     */
-
     public void checkLogin(boolean redirectLoggedOut, boolean redirectLoggedIn) {
-        // Check login status
+
         if (!this.isLoggedIn() && redirectLoggedOut) {
-            // user is not logged in redirect him to Login Activity
             Intent i = new Intent(_context, main.class);
-            // Closing all the Activities
             i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-
-            // Add new Flag to start new Activity
             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
-            // Staring Login Activity
             _context.startActivity(i);
         } else {
             if (redirectLoggedIn && this.isLoggedIn()) {
-                // user is not logged in redirect him to Login Activity
                 Intent i = new Intent(_context, user.class);
-                // Closing all the Activities
                 i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-
-                // Add new Flag to start new Activity
                 i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
-                // Staring Login Activity
                 _context.startActivity(i);
             }
         }
@@ -96,31 +66,17 @@ public class userSettings {
      */
     public HashMap<String, String> getUserDetails() {
         HashMap<String, String> user = new HashMap<>();
-        // user name
         user.put(AGENT_NAME, pref.getString(AGENT_NAME, null));
-
-        // user email id
         user.put(IMAGE_URL, pref.getString(IMAGE_URL, null));
-
-        // return user
         return user;
     }
 
-    /**
-     * Clear session details
-     */
     public void logoutUser() {
-        // Clearing all data from Shared Preferences
         editor.clear();
         editor.commit();
         this.checkLogin(true, false);
     }
 
-    /**
-     * Quick check for login
-     * *
-     */
-    // Get Login State
     public boolean isLoggedIn() {
         return pref.getBoolean(IS_LOGIN, false);
     }
