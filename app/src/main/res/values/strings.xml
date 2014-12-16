@@ -13,7 +13,6 @@
     <string name="LoginWIthKey">Login With key</string>
     <string name="lblLogout">Logout</string>
     <string name="userProfilePic">userProfilePicture</string>
-    <string name="grid_portals_discovered">statcat_see_portaldisc</string>
-    <string name="grid_portalsneut">statcat_com_portalsneut</string>
+
 
 </resources>
