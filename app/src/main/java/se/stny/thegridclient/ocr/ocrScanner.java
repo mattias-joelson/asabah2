@@ -1,5 +1,5 @@
-package se.stny.thegridclient.ocr;
 
+package se.stny.thegridclient.ocr;
 
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
@@ -10,51 +10,61 @@ import android.util.Log;
 import com.googlecode.leptonica.android.Pixa;
 import com.googlecode.tesseract.android.TessBaseAPI;
 
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONException;
+import org.json.JSONObject;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.List;
 
 import se.stny.thegridclient.util.tgcDataClass;
-import se.stny.thegridclient.util.userSettings;
 
-public class ocrScanner extends AsyncTask<List, String, List> {
+public class ocrScanner extends AsyncTask<JSONObject, String, JSONObject> {
     private final String TAG = "ocrScanner.java";
     private volatile String lang;
     private volatile AssetManager Assets;
     private volatile Bitmap Image;
     private volatile String DATA_PATH;
     private volatile TessBaseAPI base;
-    private ocrCallback<Integer, List> callback;
-    private userSettings prefs;
-
+    private ocrCallback<Integer, JSONObject> callback;
     private volatile tgcDataClass lines[];
-    private List<NameValuePair> nameValuePairs = new ArrayList<>(2);
+    private JSONObject res;
 
-    public ocrScanner(String DATA_PATH, Bitmap BMP, AssetManager assets, String lang, tgcDataClass lines[], userSettings prefs, ocrCallback<Integer, List> callback) {
+    public ocrScanner(String DATA_PATH, Bitmap BMP, AssetManager assets, String lang, tgcDataClass lines[], ocrCallback<Integer, JSONObject> callback) {
         this.DATA_PATH = DATA_PATH;
         this.Image = BMP;
         this.Assets = assets;
         this.callback = callback;
         this.lang = lang;
         this.lines = lines;
-        this.prefs = prefs;
-
     }
 
     protected void onPreExecute() {
         this.callback.ocrStart();
+        File DATA_DIR = new File(DATA_PATH);
+        File TESS_DATA_DIR = new File(DATA_DIR, "tessdata");
+        try {
+            if (!DATA_DIR.isDirectory()) {
+                if (!DATA_DIR.mkdir()) {
+                    throw new IOException();
+
+                }
+            }
+
+            if (!(TESS_DATA_DIR.mkdir() || TESS_DATA_DIR.isDirectory()))
+                throw new IOException();
+        } catch (IOException e) {
+            Log.e(TAG, "Uanble to make DATA DIR" + e.getMessage());
+            e.printStackTrace();
+
+        }
 
         try {
-            InputStream in = Assets.open("OcrData/" + lang + ".traineddata");
-            OutputStream out = new FileOutputStream(DATA_PATH + "OcrData/" + lang + ".traineddata", false);
-
-            // Transfer bytes from in to out
+            InputStream in = Assets.open("tessdata/" + lang + ".traineddata");
+            OutputStream out = new FileOutputStream(DATA_PATH + "tessdata/" + lang + ".traineddata", false);
+// Transfer bytes from in to out
             byte[] buf = new byte[1024];
             int len;
             while ((len = in.read(buf)) > 0) {
@@ -62,7 +72,6 @@ public class ocrScanner extends AsyncTask<List, String, List> {
             }
             in.close();
             out.close();
-
             Log.v(this.TAG, "Copied " + lang + " traineddata");
         } catch (IOException e) {
             Log.e(TAG, "Was unable to copy " + lang + " traineddata " + e.toString());
@@ -72,56 +81,53 @@ public class ocrScanner extends AsyncTask<List, String, List> {
         base.setImage(this.Image);
     }
 
-    protected List doInBackground(List... params) {
-
+    protected JSONObject doInBackground(JSONObject... params) {
+        this.res = new JSONObject();
         callback.ocrRunning();
         base.setPageSegMode(TessBaseAPI.PageSegMode.PSM_SINGLE_BLOCK);
-
         Pixa allLinesPixa = base.getTextlines();
-        Log.i("info", String.format("allLinesPixa.size() == %d", allLinesPixa.size()));
+
+
         base.setPageSegMode(TessBaseAPI.PageSegMode.PSM_SINGLE_LINE);
         Rect boxRect = allLinesPixa.getBoxRect(1);
         base.setRectangle(boxRect);
-
         base.setVariable(TessBaseAPI.VAR_CHAR_WHITELIST, "0123456789,");
-
         base.setRectangle(allLinesPixa.getBoxRect(3));
+        try {
+            this.res.put("statcat_ap", base.getUTF8Text().split("\\s")[0].replaceAll(",", ""));
+        } catch (JSONException e) {
+            Log.e(TAG, "Unable to acquire ap");
+        }
         base.setVariable(TessBaseAPI.VAR_CHAR_WHITELIST, "");
-
-        this.nameValuePairs.add(new BasicNameValuePair("user", prefs.getUserDetails().get("USER_ID")));
         for (Rect curRect : allLinesPixa.getBoxRects()) {
             base.setRectangle(curRect);
-            translateToRightValue(base.getUTF8Text().replaceAll(",", ""));
-
+            String tmpStr = base.getUTF8Text();
+            translateToRightValue(tmpStr);
         }
-
-        return this.nameValuePairs;
+        return this.res;
     }
 
-    protected void onPostExecute(List finish) {
-        for (tgcDataClass line : this.lines) {
-            {
-                if (!line.checkUsed()) {
-                    try {
-                        nameValuePairs.add(new BasicNameValuePair(line.getGridText(), "0"));
-                    } catch (Exception e) {
-                        Log.e(TAG, e.getMessage());
-                        Log.e(TAG, e.getCause().toString());
+    protected void onPostExecute(JSONObject finish) {
+        try {
+            for (tgcDataClass line : this.lines) {
+                {
+                    if (!line.checkUsed()) {
+                        finish.put(line.getGridText(), "0");
                     }
-
-
                 }
             }
+
+
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
         callback.ocrCompleted(finish);
         base.end();
         Log.e(TAG, "TETRA");
     }
 
-
     private void translateToRightValue(String str) {
         try {
-            this.base.setVariable(TessBaseAPI.VAR_CHAR_WHITELIST, "0123456789,");
 
             for (int i = 0; i < this.lines.length; i++) {
                 if (str.startsWith(lines[i].getIngressText())) {
@@ -129,7 +135,7 @@ public class ocrScanner extends AsyncTask<List, String, List> {
                     String[] stringArray = this.base.getUTF8Text().split("\\s");
                     int pos = this.lines[i].getSplitPos() < 0 ? stringArray.length + this.lines[i].getSplitPos() : this.lines[i].getSplitPos();
 
-                    this.nameValuePairs.add(new BasicNameValuePair(this.lines[i].getGridText(), stringArray[pos]));
+                    this.res.put(this.lines[i].getGridText(), stringArray[pos].replaceAll(",", "").replaceAll("day", "").replaceAll("s", ""));
                     this.base.setVariable(TessBaseAPI.VAR_CHAR_WHITELIST, "");
                     if (this.lines[i].hasSibling()) {
                         this.lines[this.lines[i].getSibling()].setAsUsed();
@@ -137,15 +143,13 @@ public class ocrScanner extends AsyncTask<List, String, List> {
                     }
                     this.lines[i].setAsUsed();
                     this.callback.ocrUpdate(1);
+                    base.setVariable(TessBaseAPI.VAR_CHAR_WHITELIST, "");
+                    return;
                 }
             }
-
         } catch (Exception e) {
             Log.e(TAG, e.getMessage());
         }
-        base.setVariable(TessBaseAPI.VAR_CHAR_WHITELIST, "");
 
     }
-
-
 }

@@ -9,10 +9,6 @@ public class tgcDataClass {
     private boolean hasSibling;
     private int Sibling;
 
-    public tgcDataClass() {
-        defValues();
-    }
-
     public tgcDataClass(String ingress, String grid, Integer split) {
         defValues();
         this.ingressText = ingress;
@@ -27,6 +23,7 @@ public class tgcDataClass {
         this.gridName = grid;
         this.splitPositions = split;
         this.Sibling = sibling;
+        this.hasSibling = true;
 
     }
 
@@ -43,39 +40,21 @@ public class tgcDataClass {
     public String getIngressText() {
         return this.ingressText;
     }
-
-    public void setIngressText(String txt) {
-        this.ingressText = txt;
-    }
-
     public String getGridText() {
         return this.gridName;
     }
-
-    public void setGridText(String txt) {
-        this.gridName = txt;
-    }
-
     public Integer getSplitPos() {
         return this.splitPositions;
     }
-
-    public void setSplitPos(Integer num) {
-        this.splitPositions = num;
-    }
-
     public boolean hasSibling() {
         return this.hasSibling;
     }
-
     public Integer getSibling() {
         return this.Sibling;
     }
-
     public void setAsUsed() {
-        this.isUsed = false;
+        this.isUsed = true;
     }
-
     public boolean checkUsed() {
         return this.isUsed;
     }

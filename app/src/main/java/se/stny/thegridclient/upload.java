@@ -16,7 +16,6 @@ import android.widget.Toast;
 import org.json.JSONObject;
 
 import java.io.FileNotFoundException;
-import java.util.List;
 
 import se.stny.thegridclient.gridCom.gridCom;
 import se.stny.thegridclient.ocr.ocrCallback;
@@ -25,7 +24,7 @@ import se.stny.thegridclient.util.tgcDataClass;
 import se.stny.thegridclient.util.userSettings;
 
 
-public class upload extends Activity implements ocrCallback<Integer, List> {
+public class upload extends Activity implements ocrCallback<Integer, JSONObject> {
     public static final String DATA_PATH = Environment.
             getExternalStorageDirectory().toString()
             + "/TheGrid/";
@@ -38,6 +37,7 @@ public class upload extends Activity implements ocrCallback<Integer, List> {
     private int totalProgressTime;
     private int currentProgressTime;
 
+
     private Uri imgUri;
 
     @Override
@@ -46,7 +46,7 @@ public class upload extends Activity implements ocrCallback<Integer, List> {
 
         allocate_tgcStruct();
         this.currentProgressTime = 0;
-
+        prefs = new userSettings(getApplicationContext());
         Intent intent = getIntent();
         String action = intent.getAction();
         String type = intent.getType();
@@ -64,14 +64,14 @@ public class upload extends Activity implements ocrCallback<Integer, List> {
         } else {
             Log.e(TAG, "Reached end of line");
         }
-        new ocrScanner(DATA_PATH, this.IMG, this.getAssets(), lang, this.statsData, this.prefs, this).execute();
+        new ocrScanner(DATA_PATH, this.IMG, this.getAssets(), lang, this.statsData, this).execute();
 
 
     }
 
 
     private void allocate_tgcStruct() {
-        this.statsData = new tgcDataClass[24];
+        this.statsData = new tgcDataClass[25];
         Resources res = getResources();
         this.statsData[0] = new tgcDataClass(
                 res.getString(R.string.i_unique_visits),
@@ -171,6 +171,10 @@ public class upload extends Activity implements ocrCallback<Integer, List> {
                 res.getString(R.string.i_hacks),
                 res.getString(R.string.g_hacks),
                 res.getInteger(R.integer.n_hacks));
+        this.statsData[24] = new tgcDataClass(
+                res.getString(R.string.i_portals_captured),
+                res.getString(R.string.g_portals_captured),
+                res.getInteger(R.integer.n_portals_captured));
 
         this.totalProgressTime = this.statsData.length;
     }
@@ -194,31 +198,22 @@ public class upload extends Activity implements ocrCallback<Integer, List> {
     }
 
     @Override
-    public void ocrFinishing() {
-
-    }
-
-    @Override
-    public void ocrError() {
-
-    }
-
-    @Override
-    public void ocrCompleted(List data) {
-        /*Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
-        emailIntent.setType("application/image");
-        emailIntent.putExtra(android.content.Intent.EXTRA_EMAIL, new String[]{"stefan.nygren@gmail.com"});
-        emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "[TGS-DEBUG-DATA] " + getDeviceName() + " " + getString(R.string.VERSION));
-        emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, jsonObject.toString());
-        emailIntent.putExtra(Intent.EXTRA_STREAM, this.imgUri);
-        startActivity(Intent.createChooser(emailIntent, "Send debug data..."));*/
+    public void ocrCompleted(JSONObject data) {
         pDialog.setMessage("Uploading data");
-
         gridCom postData = new gridCom("updatescore", getString(R.string.API_KEY));
-
-        postData.addAllHttpPosts(data);
-        JSONObject tmp = postData.getJSONFromUrl();
         try {
+            data.put("user", prefs.getUserDetails().get(userSettings.USER_ID));
+            data.put("statcat_innovator", String.valueOf(9));
+
+
+            for (int i = 0; i < data.names().length(); i++) {
+
+                postData.addHttpPost(data.names().getString(i), data.get(data.names().getString(i)).toString());
+            }
+
+
+            JSONObject tmp = postData.getJSONFromUrl();
+
 
             debug((String.valueOf(tmp.getInt("status"))));
         } catch (Exception e) {

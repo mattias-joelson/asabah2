@@ -15,10 +15,10 @@ public class userSettings {
 
     public static final String AGENT_NAME = "AGENT_NAME";
     public static final String IMAGE_URL = "IMAGE_URL";
+    public static final String USER_ID = "USER_ID";
+    public static final String INNOVATOR = "INNOVATOR";
     private static final String PREF_NAME = "TheGridClientPrefs";
     private static final String IS_LOGIN = "IsLoggedIn";
-    private static final String USER_ID = "USER_ID)";
-
     SharedPreferences pref;
     Editor editor;
     Context _context;
@@ -35,12 +35,13 @@ public class userSettings {
     /**
      * Create login session
      */
-    public void createLoginSession(String name, String profile_pic, String UID) {
+    public void createLoginSession(String name, String profile_pic, String UID, String INO) {
 
         editor.putBoolean(IS_LOGIN, true);
         editor.putString(AGENT_NAME, name);
         editor.putString(IMAGE_URL, profile_pic);
-        editor.putString(this.USER_ID, UID);
+        editor.putString(USER_ID, UID);
+        editor.putString(INNOVATOR, INO);
         editor.commit();
     }
 

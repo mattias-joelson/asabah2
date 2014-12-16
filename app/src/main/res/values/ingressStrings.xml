@@ -66,14 +66,14 @@
     <integer name="n_max_link_lengthxdays">5</integer>
     <string name="i_max_time_field_held">Max Time Field Held</string>
     <string name="g_max_time_field_held">statcat_def_fieldheld</string>
-    <integer name="n_max_time_field_held">-2</integer>
+    <integer name="n_max_time_field_held">-1</integer>
     <string name="i_largest_field_muxdays">Largest Field MUs x Days</string>
     <string name="g_largest_field_muxdays">statcat_def_muxdays</string>
     <integer name="n_largest_field_muxdays">-2</integer>
     <string name="i_mods_deployed">Mods Deployed</string>
-    <string name="g_mods_deployed">statscat_bui_mods</string>
+    <string name="g_mods_deployed">statcat_bui_moddeploy</string>
     <integer name="n_mods_deployed">2</integer>
     <string name="i_mission_completed">Unique Missions Completed</string>
-    <string name="g_mission_completed">statscat_mis_completed</string>
+    <string name="g_mission_completed">statcat_mis_completed</string>
     <integer name="n_mission_completed">3</integer>
 </resources>
