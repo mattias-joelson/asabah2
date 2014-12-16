@@ -2,15 +2,18 @@ package se.stny.thegridclient;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
+import android.widget.Toast;
+
+import org.json.JSONObject;
 
 import java.io.FileNotFoundException;
 import java.util.List;
@@ -34,7 +37,7 @@ public class upload extends Activity implements ocrCallback<Integer, List> {
     private ProgressDialog pDialog;
     private int totalProgressTime;
     private int currentProgressTime;
-    private ocrScanner scanner;
+
     private Uri imgUri;
 
     @Override
@@ -213,7 +216,15 @@ public class upload extends Activity implements ocrCallback<Integer, List> {
 
         gridCom postData = new gridCom("updatescore", getString(R.string.API_KEY));
         postData.addAllHttpPosts(data);
-        postData.getJSONFromUrl();
+        JSONObject tmp = postData.getJSONFromUrl();
+        try {
+
+            debug((String.valueOf(tmp.getInt("status"))));
+        } catch (Exception e) {
+            debug("WTF");
+            debug(e.getMessage());
+        }
+
         this.pDialog.dismiss();
     }
 
@@ -223,24 +234,12 @@ public class upload extends Activity implements ocrCallback<Integer, List> {
 
         this.pDialog.setProgress(this.currentProgressTime);
     }
-    private String getDeviceName() {
-        String manufacturer = Build.MANUFACTURER;
-        String model = Build.MODEL;
-        if (model.startsWith(manufacturer)) {
-            return capitalize(model);
-        } else {
-            return capitalize(manufacturer) + " " + model;
-        }
-    }
-    private String capitalize(String s) {
-        if (s == null || s.length() == 0) {
-            return "";
-        }
-        char first = s.charAt(0);
-        if (Character.isUpperCase(first)) {
-            return s;
-        } else {
-            return Character.toUpperCase(first) + s.substring(1);
-        }
+
+
+    private void debug(String string) {
+        Context context = getApplicationContext();
+        int duration = Toast.LENGTH_SHORT;
+        Toast toast = Toast.makeText(context, string, duration);
+        toast.show();
     }
 }
