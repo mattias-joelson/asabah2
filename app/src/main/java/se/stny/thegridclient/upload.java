@@ -1,30 +1,7 @@
 package se.stny.thegridclient;
 
 import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
-import android.content.res.AssetManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Rect;
-import android.net.Uri;
-import android.os.Build;
-import android.os.Bundle;
 import android.os.Environment;
-import android.util.Log;
-import android.widget.Toast;
-
-import com.googlecode.leptonica.android.Pixa;
-import com.googlecode.tesseract.android.TessBaseAPI;
-import com.googlecode.tesseract.android.TessBaseAPI.PageSegMode;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.concurrent.ExecutionException;
 
 import se.stny.thegridclient.util.userSettings;
 
@@ -36,26 +13,26 @@ public class upload extends Activity {
     private static final String TAG = "Upload.java";
     userSettings prefs;
 
-    @Override
+    /*@Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         prefs = new userSettings(getApplicationContext());
-        String[] paths = new String[] { DATA_PATH, DATA_PATH + "tessdata/" };
+        String[] paths = new String[]{DATA_PATH, DATA_PATH + "tessdata/"};
         debug("Status:" + prefs.isLoggedIn());
         prefs.checkLogin(true, false);
         if (!prefs.isLoggedIn())
-        for (String path : paths) {
-            File dir = new File(path);
-            if (!dir.exists()) {
-                if (!dir.mkdirs()) {
-                    Log.v(TAG, "ERROR: Creation of directory " + path + " on sdcard failed");
-                    return;
-                } else {
-                    Log.v(TAG, "Created directory " + path + " on sdcard");
+            for (String path : paths) {
+                File dir = new File(path);
+                if (!dir.exists()) {
+                    if (!dir.mkdirs()) {
+                        Log.v(TAG, "ERROR: Creation of directory " + path + " on sdcard failed");
+                        return;
+                    } else {
+                        Log.v(TAG, "Created directory " + path + " on sdcard");
+                    }
                 }
-            }
 
-        }
+            }
 
         // lang.traineddata file with the app (in assets folder)
         // You can get them at:
@@ -105,37 +82,9 @@ public class upload extends Activity {
         }
     }
 
-    private String extract(Bitmap bmp) throws ExecutionException, InterruptedException {
-        String fin = "";
-        Log.i("info", String.format("Image size: %d x %d", bmp.getWidth(), bmp.getHeight()));
-
-        final TessBaseAPI baseApi = new TessBaseAPI();
-        baseApi.init(DATA_PATH, "eng");
-        baseApi.setPageSegMode(TessBaseAPI.PageSegMode.PSM_SINGLE_BLOCK);
-        baseApi.setImage(bmp);
-        Pixa allLinesPixa = baseApi.getTextlines();
-        Log.i("info", String.format("allLinesPixa.size() == %d", allLinesPixa.size()));
-        baseApi.setPageSegMode(PageSegMode.PSM_SINGLE_LINE);
-        Rect boxRect = allLinesPixa.getBoxRect(1);
-        baseApi.setRectangle(boxRect);
-
-        baseApi.setVariable(TessBaseAPI.VAR_CHAR_WHITELIST, "0123456789,");
-
-        baseApi.setRectangle(allLinesPixa.getBoxRect(3));
-        baseApi.setVariable(TessBaseAPI.VAR_CHAR_WHITELIST, "");
-        for (Rect curRect : allLinesPixa.getBoxRects()) {
-            baseApi.setRectangle(curRect);
-            String text = baseApi.getUTF8Text();
-
-            fin = fin + "\n" + text;
-        }
-        baseApi.end();
-        return fin;
-    }
 
     @SuppressWarnings("")
-    private void decodeOCR(Intent intent)
-    {
+    private void decodeOCR(Intent intent) {
         Bitmap bm = null;
         String data = "";
         Uri imageUri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
@@ -143,7 +92,6 @@ public class upload extends Activity {
             try {
                 bm = BitmapFactory.decodeStream(getContentResolver()
                         .openInputStream(imageUri));
-
 
 
             } catch (FileNotFoundException e) {
@@ -209,5 +157,5 @@ public class upload extends Activity {
         } else {
             return Character.toUpperCase(first) + s.substring(1);
         }
-    }
+    }*/
 }

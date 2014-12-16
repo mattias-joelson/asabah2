@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="upv">Unique Portals Visited</string>
+    <string name="portals_discovered">Portals Discovered</string>
+    <string name="xm_collected">XM Collected</string>
+    <string name="hacks">Hacks</string>
+    <string name="resonators_deployed">Resonators Deployed</string>
+    <string name="links_created">Links Created</string>
+    <string name="control_fields_created">Control Fields Created</string>
+    <string name="mu">Mind Units Captured</string>
+    <string name="longest_link">Longest Link Ever Created</string>
+    <string name="largest_control_field">Largest Control Field</string>
+    <string name="xm_recharged">XM Recharged</string>
+    <string name="xm_recharged2">XM Reoharged</string>
+    <string name="portals_captured">Portals Captured</string>
+    <string name="upc">Unique Portals Captured</string>
+    <string name="resonators_destroyed">Resonators Destroyed</string>
+    <string name="portals_neutralized">Portals Neutralized</string>
+    <string name="links_destroyed">Enemy Links Destroyed</string>
+    <string name="control_fields_destroyed">Enemy Control Fields Destroyed</string>
+    <string name="distance_walked">Distance Walked</string>
+    <string name="max_time_portal_held">Max Time Portal Held</string>
+    <string name="max_time_link_maintained">Max Time Link Maintained</string>
+    <string name="max_link_lengthxdays">Max Link Length x Days</string>
+    <string name="max_time_field_held">Max Time Field Held</string>
+    <string name="largest_field_muxdays">Largest Field MUs x Days</string>
+    <string name="mods_deployed">Mods Deployed</string>
+</resources>
