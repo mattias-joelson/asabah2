@@ -13,7 +13,7 @@ import android.os.Environment;
 import android.util.Log;
 
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
+import java.util.List;
 
 import se.stny.thegridclient.gridCom.gridCom;
 import se.stny.thegridclient.ocr.ocrCallback;
@@ -22,7 +22,7 @@ import se.stny.thegridclient.util.tgcDataClass;
 import se.stny.thegridclient.util.userSettings;
 
 
-public class upload extends Activity implements ocrCallback<Integer, ArrayList> {
+public class upload extends Activity implements ocrCallback<Integer, List> {
     public static final String DATA_PATH = Environment.
             getExternalStorageDirectory().toString()
             + "/TheGrid/";
@@ -62,6 +62,7 @@ public class upload extends Activity implements ocrCallback<Integer, ArrayList> 
             Log.e(TAG, "Reached end of line");
         }
         new ocrScanner(DATA_PATH, this.IMG, this.getAssets(), lang, this.statsData, this).execute();
+
 
     }
 
@@ -200,7 +201,7 @@ public class upload extends Activity implements ocrCallback<Integer, ArrayList> 
     }
 
     @Override
-    public void ocrCompleted(ArrayList data) {
+    public void ocrCompleted(List data) {
         /*Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
         emailIntent.setType("application/image");
         emailIntent.putExtra(android.content.Intent.EXTRA_EMAIL, new String[]{"stefan.nygren@gmail.com"});

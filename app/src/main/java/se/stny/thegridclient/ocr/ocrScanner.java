@@ -12,7 +12,6 @@ import com.googlecode.tesseract.android.TessBaseAPI;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
-import org.json.JSONObject;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -23,19 +22,19 @@ import java.util.List;
 
 import se.stny.thegridclient.util.tgcDataClass;
 
-public class ocrScanner extends AsyncTask<JSONObject, String, JSONObject> {
+public class ocrScanner extends AsyncTask<List, String, List> {
     private final String TAG = "ocrScanner.java";
     private volatile String lang;
     private volatile AssetManager Assets;
     private volatile Bitmap Image;
     private volatile String DATA_PATH;
     private volatile TessBaseAPI base;
-    private ocrCallback<Integer, JSONObject> callback;
+    private ocrCallback<Integer, List> callback;
 
     private volatile tgcDataClass lines[];
     private List<NameValuePair> nameValuePairs = new ArrayList<>(2);
 
-    public ocrScanner(String DATA_PATH, Bitmap BMP, AssetManager assets, String lang, tgcDataClass lines[], ocrCallback<Integer, JSONObject> callback) {
+    public ocrScanner(String DATA_PATH, Bitmap BMP, AssetManager assets, String lang, tgcDataClass lines[], ocrCallback<Integer, List> callback) {
         this.DATA_PATH = DATA_PATH;
         this.Image = BMP;
         this.Assets = assets;
@@ -70,8 +69,8 @@ public class ocrScanner extends AsyncTask<JSONObject, String, JSONObject> {
         base.setImage(this.Image);
     }
 
-    protected JSONObject doInBackground(JSONObject... params) {
-        JSONObject res = new JSONObject();
+    protected List doInBackground(List... params) {
+
         callback.ocrRunning();
         base.setPageSegMode(TessBaseAPI.PageSegMode.PSM_SINGLE_BLOCK);
 
@@ -91,10 +90,10 @@ public class ocrScanner extends AsyncTask<JSONObject, String, JSONObject> {
 
         }
 
-        return res;
+        return this.nameValuePairs;
     }
 
-    protected void onPostExecute(ArrayList finish) {
+    protected void onPostExecute(List finish) {
         for (tgcDataClass line : this.lines) {
             {
                 if (!line.checkUsed()) {
