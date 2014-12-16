@@ -77,7 +77,7 @@ public class main extends Activity {
                             if (status == 200) {
 
                                 if (tmp.get("codename").toString().toLowerCase().equals(username.toLowerCase())) {
-                                    session.createLoginSession(tmp.getString("codename"), tmp.getString("profilepic").replace("\\/", "/"));
+                                    session.createLoginSession(tmp.getString("codename"), tmp.getString("profilepic").replace("\\/", "/"), password);
                                     Intent i = new Intent(getApplicationContext(), user.class);
                                     startActivity(i);
                                     finish();

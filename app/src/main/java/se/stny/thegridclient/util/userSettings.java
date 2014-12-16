@@ -17,6 +17,7 @@ public class userSettings {
     public static final String IMAGE_URL = "IMAGE_URL";
     private static final String PREF_NAME = "TheGridClientPrefs";
     private static final String IS_LOGIN = "IsLoggedIn";
+    private static final String USER_ID = "USER_ID)";
 
     SharedPreferences pref;
     Editor editor;
@@ -34,11 +35,12 @@ public class userSettings {
     /**
      * Create login session
      */
-    public void createLoginSession(String name, String profile_pic) {
+    public void createLoginSession(String name, String profile_pic, String UID) {
 
         editor.putBoolean(IS_LOGIN, true);
         editor.putString(AGENT_NAME, name);
         editor.putString(IMAGE_URL, profile_pic);
+        editor.putString(this.USER_ID, UID);
         editor.commit();
     }
 
@@ -68,6 +70,7 @@ public class userSettings {
         HashMap<String, String> user = new HashMap<>();
         user.put(AGENT_NAME, pref.getString(AGENT_NAME, null));
         user.put(IMAGE_URL, pref.getString(IMAGE_URL, null));
+        user.put(USER_ID, pref.getString(USER_ID, null));
         return user;
     }
 

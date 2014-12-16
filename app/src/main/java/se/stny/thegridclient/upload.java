@@ -64,7 +64,7 @@ public class upload extends Activity implements ocrCallback<Integer, List> {
         } else {
             Log.e(TAG, "Reached end of line");
         }
-        new ocrScanner(DATA_PATH, this.IMG, this.getAssets(), lang, this.statsData, this).execute();
+        new ocrScanner(DATA_PATH, this.IMG, this.getAssets(), lang, this.statsData, this.prefs, this).execute();
 
 
     }
@@ -215,6 +215,7 @@ public class upload extends Activity implements ocrCallback<Integer, List> {
         pDialog.setMessage("Uploading data");
 
         gridCom postData = new gridCom("updatescore", getString(R.string.API_KEY));
+
         postData.addAllHttpPosts(data);
         JSONObject tmp = postData.getJSONFromUrl();
         try {

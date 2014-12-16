@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import se.stny.thegridclient.util.tgcDataClass;
+import se.stny.thegridclient.util.userSettings;
 
 public class ocrScanner extends AsyncTask<List, String, List> {
     private final String TAG = "ocrScanner.java";
@@ -30,17 +31,19 @@ public class ocrScanner extends AsyncTask<List, String, List> {
     private volatile String DATA_PATH;
     private volatile TessBaseAPI base;
     private ocrCallback<Integer, List> callback;
+    private userSettings prefs;
 
     private volatile tgcDataClass lines[];
     private List<NameValuePair> nameValuePairs = new ArrayList<>(2);
 
-    public ocrScanner(String DATA_PATH, Bitmap BMP, AssetManager assets, String lang, tgcDataClass lines[], ocrCallback<Integer, List> callback) {
+    public ocrScanner(String DATA_PATH, Bitmap BMP, AssetManager assets, String lang, tgcDataClass lines[], userSettings prefs, ocrCallback<Integer, List> callback) {
         this.DATA_PATH = DATA_PATH;
         this.Image = BMP;
         this.Assets = assets;
         this.callback = callback;
         this.lang = lang;
         this.lines = lines;
+        this.prefs = prefs;
 
     }
 
@@ -84,6 +87,8 @@ public class ocrScanner extends AsyncTask<List, String, List> {
 
         base.setRectangle(allLinesPixa.getBoxRect(3));
         base.setVariable(TessBaseAPI.VAR_CHAR_WHITELIST, "");
+
+        this.nameValuePairs.add(new BasicNameValuePair("user", prefs.getUserDetails().get("USER_ID")));
         for (Rect curRect : allLinesPixa.getBoxRects()) {
             base.setRectangle(curRect);
             translateToRightValue(base.getUTF8Text().replaceAll(",", ""));
