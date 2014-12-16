@@ -68,7 +68,7 @@ public class gridCom extends AsyncTask<Void, Void, JSONObject> {
         nameValuePairs.add(new BasicNameValuePair(id, Val));
     }
 
-    public void addAllHttpPosts(List pars) {
+    public void addAllHttpPosts(List<NameValuePair> pars) {
         nameValuePairs = pars;
     }
 
