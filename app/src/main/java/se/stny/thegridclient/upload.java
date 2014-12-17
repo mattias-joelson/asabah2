@@ -8,11 +8,13 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
 import android.widget.Toast;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.FileNotFoundException;
@@ -23,8 +25,7 @@ import se.stny.thegridclient.ocr.ocrScanner;
 import se.stny.thegridclient.util.tgcDataClass;
 import se.stny.thegridclient.util.userSettings;
 
-
-public class upload extends Activity implements ocrCallback<Integer, JSONObject> {
+public class upload extends Activity implements ocrCallback<Integer, JSONObject, String, String> {
     public static final String DATA_PATH = Environment.
             getExternalStorageDirectory().toString()
             + "/TheGrid/";
@@ -37,7 +38,7 @@ public class upload extends Activity implements ocrCallback<Integer, JSONObject>
     private int totalProgressTime;
     private int currentProgressTime;
 
-
+    private JSONObject dbgData;//TODO: REMOVE DEBUG
     private Uri imgUri;
 
     @Override
@@ -45,6 +46,8 @@ public class upload extends Activity implements ocrCallback<Integer, JSONObject>
         super.onCreate(savedInstanceState);
 
         allocate_tgcStruct();
+
+        dbgData = new JSONObject();  //TODO: REMOVE DEBUG
         this.currentProgressTime = 0;
         prefs = new userSettings(getApplicationContext());
         Intent intent = getIntent();
@@ -201,6 +204,7 @@ public class upload extends Activity implements ocrCallback<Integer, JSONObject>
     public void ocrCompleted(JSONObject data) {
         pDialog.setMessage("Uploading data");
         gridCom postData = new gridCom("updatescore", getString(R.string.API_KEY));
+        gridCom debugData = new gridCom("setdata", getString(R.string.API_KEY));//TODO: REMOVE DEBUG
         try {
             data.put("user", prefs.getUserDetails().get(userSettings.USER_ID));
             data.put("statcat_innovator", String.valueOf(9));
@@ -215,13 +219,40 @@ public class upload extends Activity implements ocrCallback<Integer, JSONObject>
             JSONObject tmp = postData.getJSONFromUrl();
 
 
-            debug((String.valueOf(tmp.getInt("status"))));
+            debug("GridPost=" + String.valueOf(tmp.getInt("status")));
+
+            JSONObject dbg1 = new JSONObject(); //TODO: REMOVE DEBUG
+            JSONObject dbg = new JSONObject();//TODO: REMOVE DEBUG
+            String sent = "[ " + data.toString() + "]";
+            String scan = "[ " + this.dbgData.toString() + "]";
+            dbg.put("sent", sent.replaceAll("\\\\", ""));//TODO: REMOVE DEBUG
+            dbg.put("scan", scan.replaceAll("\\\\", ""));//TODO: REMOVE DEBUG
+            dbg.put("user", prefs.getUserDetails().get(userSettings.USER_ID));
+            dbg.put("device", Build.MANUFACTURER + " " + Build.MODEL + " (" + Build.VERSION.RELEASE + ")");
+
+            Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
+            emailIntent.setType("application/image");
+            emailIntent.putExtra(android.content.Intent.EXTRA_EMAIL, new String[]{"stefan.nygren@gmail.com"});
+            emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "[TGC-DEBUG_DATA] Scan report");
+            emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, dbg1.toString());
+            emailIntent.putExtra(Intent.EXTRA_STREAM, this.imgUri);
+            startActivity(Intent.createChooser(emailIntent, "Send mail..."));
+
         } catch (Exception e) {
             debug("WTF");
             debug(e.getMessage());
         }
-
         this.pDialog.dismiss();
+    }
+
+    @Override
+    public void ocrDebugData(String str, String status) {  //TODO: REMOVE DEBUG
+        try {  //TODO: REMOVE DEBUG
+            this.dbgData.put(str, status);  //TODO: REMOVE DEBUG
+        } catch (JSONException ee)//TODO: REMOVE DEBUG
+        { //TODO: REMOVE DEBUG
+            //TODO: REMOVE DEBUG
+        } //TODO: REMOVE DEBUG
     }
 
     @Override

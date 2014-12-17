@@ -28,11 +28,11 @@ public class ocrScanner extends AsyncTask<JSONObject, String, JSONObject> {
     private volatile Bitmap Image;
     private volatile String DATA_PATH;
     private volatile TessBaseAPI base;
-    private ocrCallback<Integer, JSONObject> callback;
+    private ocrCallback<Integer, JSONObject, String, String> callback;
     private volatile tgcDataClass lines[];
     private JSONObject res;
 
-    public ocrScanner(String DATA_PATH, Bitmap BMP, AssetManager assets, String lang, tgcDataClass lines[], ocrCallback<Integer, JSONObject> callback) {
+    public ocrScanner(String DATA_PATH, Bitmap BMP, AssetManager assets, String lang, tgcDataClass lines[], ocrCallback<Integer, JSONObject, String, String> callback) {
         this.DATA_PATH = DATA_PATH;
         this.Image = BMP;
         this.Assets = assets;
@@ -144,9 +144,11 @@ public class ocrScanner extends AsyncTask<JSONObject, String, JSONObject> {
                     this.lines[i].setAsUsed();
                     this.callback.ocrUpdate(1);
                     base.setVariable(TessBaseAPI.VAR_CHAR_WHITELIST, "");
+                    this.callback.ocrDebugData(str, "YES");
                     return;
                 }
             }
+            this.callback.ocrDebugData(str, "NO");
         } catch (Exception e) {
             Log.e(TAG, e.getMessage());
         }
