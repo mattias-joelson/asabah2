@@ -204,7 +204,6 @@ public class upload extends Activity implements ocrCallback<Integer, JSONObject,
     public void ocrCompleted(JSONObject data) {
         pDialog.setMessage("Uploading data");
         gridCom postData = new gridCom("updatescore", getString(R.string.API_KEY));
-        gridCom debugData = new gridCom("setdata", getString(R.string.API_KEY));//TODO: REMOVE DEBUG
         try {
             data.put("user", prefs.getUserDetails().get(userSettings.USER_ID));
             data.put("statcat_innovator", String.valueOf(9));
@@ -233,7 +232,7 @@ public class upload extends Activity implements ocrCallback<Integer, JSONObject,
             Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
             emailIntent.setType("application/image");
             emailIntent.putExtra(android.content.Intent.EXTRA_EMAIL, new String[]{"stefan.nygren@gmail.com"});
-            emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "[TGC-DEBUG_DATA] Scan report");
+            emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "[TGC-DEBUG-DATA] Scan report" + Build.MANUFACTURER + " " + Build.MODEL + " (" + Build.VERSION.RELEASE + ")");
             emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, dbg1.toString());
             emailIntent.putExtra(Intent.EXTRA_STREAM, this.imgUri);
             startActivity(Intent.createChooser(emailIntent, "Send mail..."));
