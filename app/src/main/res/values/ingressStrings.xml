@@ -3,7 +3,7 @@
     <string name="i_unique_visits">Unique Portals Visited</string>
     <string name="g_unique_visits">statcat_exp_portalvisit</string>
     <integer name="n_unique_visists">3</integer>
-    <string name="i_portal_discovered">Portals Discovered</string>
+    <string name="i_portals_discovered">Portals Discovered</string>
     <string name="g_portals_discovered">statcat_see_portaldisc</string>
     <integer name="n_portals_discovered">2</integer>
     <string name="i_xm_collected">XM Collected</string>

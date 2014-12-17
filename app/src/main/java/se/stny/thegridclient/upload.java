@@ -74,7 +74,7 @@ public class upload extends Activity implements ocrCallback<Integer, JSONObject,
 
 
     private void allocate_tgcStruct() {
-        this.statsData = new tgcDataClass[25];
+        this.statsData = new tgcDataClass[26];
         Resources res = getResources();
         this.statsData[0] = new tgcDataClass(
                 res.getString(R.string.i_unique_visits),
@@ -178,6 +178,10 @@ public class upload extends Activity implements ocrCallback<Integer, JSONObject,
                 res.getString(R.string.i_portals_captured),
                 res.getString(R.string.g_portals_captured),
                 res.getInteger(R.integer.n_portals_captured));
+        this.statsData[25] = new tgcDataClass(
+                res.getString(R.string.i_portals_discovered),
+                res.getString(R.string.g_portals_discovered),
+                res.getInteger(R.integer.n_portals_discovered));
 
         this.totalProgressTime = this.statsData.length;
     }
@@ -225,7 +229,7 @@ public class upload extends Activity implements ocrCallback<Integer, JSONObject,
             String sent = "[ " + data.toString() + "]";
             String scan = "[ " + this.dbgData.toString() + "]";
             dbg.put("sent", sent.replaceAll("\\\\", ""));//TODO: REMOVE DEBUG
-            dbg.put("scan", scan.replaceAll("\\\\", ""));//TODO: REMOVE DEBUG
+            dbg.put("scan", scan.replaceAll("\\\\", ""));//TODO: REMOVE     DEBUG
             dbg.put("user", prefs.getUserDetails().get(userSettings.USER_ID));
             dbg.put("device", Build.MANUFACTURER + " " + Build.MODEL + " (" + Build.VERSION.RELEASE + ")");
 
