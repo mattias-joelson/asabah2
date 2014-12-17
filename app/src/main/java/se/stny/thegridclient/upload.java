@@ -224,7 +224,6 @@ public class upload extends Activity implements ocrCallback<Integer, JSONObject,
 
             debug("GridPost=" + String.valueOf(tmp.getInt("status")));
 
-            JSONObject dbg1 = new JSONObject(); //TODO: REMOVE DEBUG
             JSONObject dbg = new JSONObject();//TODO: REMOVE DEBUG
             String sent = "[ " + data.toString() + "]";
             String scan = "[ " + this.dbgData.toString() + "]";
@@ -237,7 +236,7 @@ public class upload extends Activity implements ocrCallback<Integer, JSONObject,
             emailIntent.setType("application/image");
             emailIntent.putExtra(android.content.Intent.EXTRA_EMAIL, new String[]{"stefan.nygren@gmail.com"});
             emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "[TGC-DEBUG-DATA] Scan report" + Build.MANUFACTURER + " " + Build.MODEL + " (" + Build.VERSION.RELEASE + ")");
-            emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, dbg1.toString());
+            emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, dbg.toString());
             emailIntent.putExtra(Intent.EXTRA_STREAM, this.imgUri);
             startActivity(Intent.createChooser(emailIntent, "Send mail..."));
 

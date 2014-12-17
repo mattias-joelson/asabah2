@@ -66,7 +66,7 @@
     <integer name="n_max_link_lengthxdays">5</integer>
     <string name="i_max_time_field_held">Max Time Field Held</string>
     <string name="g_max_time_field_held">statcat_def_fieldheld</string>
-    <integer name="n_max_time_field_held">-1</integer>
+    <integer name="n_max_time_field_held">4</integer>
     <string name="i_largest_field_muxdays">Largest Field MUs x Days</string>
     <string name="g_largest_field_muxdays">statcat_def_muxdays</string>
     <integer name="n_largest_field_muxdays">-2</integer>
