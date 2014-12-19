@@ -1,8 +1,8 @@
 package se.stny.thegridclient;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -18,7 +18,7 @@ import java.net.URLEncoder;
 import se.stny.thegridclient.gridCom.gridCom;
 import se.stny.thegridclient.util.userSettings;
 
-public class post_upload extends ActionBarActivity {
+public class post_upload extends Activity {
     private final String TAG = "post_upload.java";
     gridCom postData = null;
     private JSONObject obj;
