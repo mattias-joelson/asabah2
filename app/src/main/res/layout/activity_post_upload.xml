@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#0099cc"
+    tools:context=".upload">
+
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="vertical"
+
+        >
+
+        <RelativeLayout
+            android:id="@+id/wlll"
+            android:layout_width="fill_parent"
+            android:layout_height="45dip"
+            android:fadingEdge="none">
+
+            <TextView
+                android:id="@+id/title_bar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentTop="true"
+                android:ellipsize="marquee"
+                android:paddingLeft="12dip"
+                android:paddingTop="9dip"
+                android:shadowColor="#000000"
+                android:shadowDy="-1"
+                android:shadowRadius="1"
+                android:text="@string/app_name"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="#ffffff"
+                android:textStyle="bold"
+
+                />
+
+            <ImageView
+                android:id="@+id/header_button_1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentRight="true" />
+
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:orientation="vertical"
+            android:padding="4dip">
+
+            <TextView
+                android:id="@+id/carrier"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:padding="7dip"
+                android:shadowColor="#fff"
+                android:shadowDy="-1"
+                android:shadowRadius="1"
+                android:text="@string/yourpostisready"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textColor="#333"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/num_desc"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:padding="3dip"
+                android:shadowColor="#fff"
+                android:shadowDy="-1"
+                android:shadowRadius="1"
+                android:text="\nWrite your update text in box below"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="#333" />
+
+            <EditText
+                android:id="@+id/statusUpdate"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/sampleText"
+                android:maxLength="@integer/maxTextSize"
+                android:minLines="4" />
+
+
+            <Button
+                android:id="@+id/UpdateWithText"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:padding="4dip"
+                android:text="Update with text"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <Button
+                android:id="@+id/UpdateWithoutText"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:padding="4dip"
+                android:text="Update without text"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_centerHorizontal="true"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:padding="4dip">
+
+                <ProgressBar
+                    android:id="@+id/progressbar"
+                    style="@android:style/Widget.ProgressBar.Small"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:padding="6dip"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/loadingtext"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:padding="5dip"
+                    android:text="posting.."
+                    android:textColor="#000000"
+                    android:textSize="12dip"
+                    android:visibility="gone"
+
+                    />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+</FrameLayout>

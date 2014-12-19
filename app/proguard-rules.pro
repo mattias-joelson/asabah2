@@ -15,3 +15,9 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
+-keep public class com.crittercism.**
+-keepclassmembers public class com.crittercism.*
+{
+    *;
+}
+-keepattributes SourceFile, LineNumberTable

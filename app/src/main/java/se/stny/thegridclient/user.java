@@ -1,12 +1,10 @@
 package se.stny.thegridclient;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -14,7 +12,7 @@ import android.widget.Toast;
 import se.stny.thegridclient.util.DownloadImageTask;
 import se.stny.thegridclient.util.userSettings;
 
-public class user extends ActionBarActivity {
+public class user extends Activity {
 
 
     private userSettings ses;
@@ -28,17 +26,6 @@ public class user extends ActionBarActivity {
         ((TextView) findViewById(R.id.agentName)).setText(ses.getUserDetails().get(userSettings.AGENT_NAME));
         new DownloadImageTask((ImageView) findViewById(R.id.img_profile))
                 .execute(ses.getUserDetails().get(userSettings.IMAGE_URL).replace("sz=50", "sz=200"));
-
-        Button button = (Button) findViewById(R.id.button);
-        button.setText("logout");
-        button.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                ses.logoutUser();
-
-            }
-
-
-        });
     }
 
 
@@ -57,7 +44,8 @@ public class user extends ActionBarActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.user_logout) {
+            ses.logoutUser();
             return true;
         }
 

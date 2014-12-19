@@ -8,7 +8,6 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
@@ -19,7 +18,6 @@ import org.json.JSONObject;
 
 import java.io.FileNotFoundException;
 
-import se.stny.thegridclient.gridCom.gridCom;
 import se.stny.thegridclient.ocr.ocrCallback;
 import se.stny.thegridclient.ocr.ocrScanner;
 import se.stny.thegridclient.util.tgcDataClass;
@@ -40,10 +38,17 @@ public class upload extends Activity implements ocrCallback<Integer, JSONObject,
 
     private JSONObject dbgData;//TODO: REMOVE DEBUG
     private Uri imgUri;
+    private userSettings ses;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        ses = new userSettings(getApplicationContext());
+        if (!ses.isLoggedIn()) {
+            ses.checkLogin(true, false);
+            finish();
+            debug("You are currently not logged in");
+        }
 
         allocate_tgcStruct();
 
@@ -207,54 +212,32 @@ public class upload extends Activity implements ocrCallback<Integer, JSONObject,
     @Override
     public void ocrCompleted(JSONObject data) {
         pDialog.setMessage("Uploading data");
-        gridCom postData = new gridCom("updatescore", getString(R.string.API_KEY));
+        this.pDialog.dismiss();
         try {
             data.put("user", prefs.getUserDetails().get(userSettings.USER_ID));
             data.put("statcat_innovator", String.valueOf(9));
 
 
-            for (int i = 0; i < data.names().length(); i++) {
+            Intent i = new Intent(getApplicationContext(), post_upload.class);
+            i.putExtra("json", data.toString());
+            startActivity(i);
+            finish();
 
-                postData.addHttpPost(data.names().getString(i), data.get(data.names().getString(i)).toString());
-            }
-
-
-            JSONObject tmp = postData.getJSONFromUrl();
-
-
-            debug("GridPost=" + String.valueOf(tmp.getInt("status")));
-
-            JSONObject dbg = new JSONObject();//TODO: REMOVE DEBUG
-            String sent = "[ " + data.toString() + "]";
-            String scan = "[ " + this.dbgData.toString() + "]";
-            dbg.put("sent", sent.replaceAll("\\\\", ""));//TODO: REMOVE DEBUG
-            dbg.put("scan", scan.replaceAll("\\\\", ""));//TODO: REMOVE     DEBUG
-            dbg.put("user", prefs.getUserDetails().get(userSettings.USER_ID));
-            dbg.put("device", Build.MANUFACTURER + " " + Build.MODEL + " (" + Build.VERSION.RELEASE + ")");
-
-            Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
-            emailIntent.setType("application/image");
-            emailIntent.putExtra(android.content.Intent.EXTRA_EMAIL, new String[]{"stefan.nygren@gmail.com"});
-            emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "[TGC-DEBUG-DATA] Scan report" + Build.MANUFACTURER + " " + Build.MODEL + " (" + Build.VERSION.RELEASE + ")");
-            emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, dbg.toString());
-            emailIntent.putExtra(Intent.EXTRA_STREAM, this.imgUri);
-            startActivity(Intent.createChooser(emailIntent, "Send mail..."));
 
         } catch (Exception e) {
             debug("WTF");
             debug(e.getMessage());
         }
-        this.pDialog.dismiss();
+
     }
 
     @Override
-    public void ocrDebugData(String str, String status) {  //TODO: REMOVE DEBUG
-        try {  //TODO: REMOVE DEBUG
-            this.dbgData.put(str, status);  //TODO: REMOVE DEBUG
-        } catch (JSONException ee)//TODO: REMOVE DEBUG
-        { //TODO: REMOVE DEBUG
-            //TODO: REMOVE DEBUG
-        } //TODO: REMOVE DEBUG
+    public void ocrDebugData(String str, String status) {
+        try {
+            this.dbgData.put(str, status);
+        } catch (JSONException ee) {
+
+        }
     }
 
     @Override

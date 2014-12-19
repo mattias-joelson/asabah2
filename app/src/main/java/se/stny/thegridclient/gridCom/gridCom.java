@@ -64,6 +64,19 @@ public class gridCom extends AsyncTask<Void, Void, JSONObject> {
         return this.myState;
     }
 
+    public void addHttpPostsFromJson(JSONObject json) {
+        try {
+
+
+            for (int i = 0; i < json.names().length(); i++) {
+
+                this.addHttpPost(json.names().getString(i), json.get(json.names().getString(i)).toString());
+            }
+        } catch (Exception e) {
+
+        }
+    }
+
     public void addHttpPost(String id, String Val) {
         nameValuePairs.add(new BasicNameValuePair(id, Val));
     }
@@ -142,7 +155,6 @@ public class gridCom extends AsyncTask<Void, Void, JSONObject> {
 
     public enum runState {
         NOT_STARTED, RUNNING, FINISHED, ERROR
-
 
 
     }
