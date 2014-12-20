@@ -25,5 +25,7 @@
     <string name="txtUpdateWithoutText">Update without text</string>
     <string name="txtUpdateSilently">Update silently</string>
     <string name="txtPosting">posting..</string>
+    <string name="matchPatternUserName">abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ012345789_-</string>
+    <string name="matchPatternKeyAndPin">abcdefABCDEF012345789</string>
 
 </resources>

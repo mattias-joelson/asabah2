@@ -2,6 +2,7 @@ package se.stny.thegridclient;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -115,12 +116,14 @@ public class post_upload extends Activity {
 
     private void FinishUpload() {
 
+        Switch mySwitch = (Switch) findViewById(R.id.switch2);
+        JSONObject res = null;
         try {
             if (!sendEmail) {
                 obj.put("no_email", String.valueOf(1));
             }
             postData.addHttpPostsFromJson(obj);
-            JSONObject res = postData.getJSONFromUrl();
+            res = postData.getJSONFromUrl();
             if (res.getInt("status") != 200) {
                 Log.e(TAG, "Got return code " + res.getString("status"));
                 Log.e(TAG, res.toString());
@@ -130,6 +133,21 @@ public class post_upload extends Activity {
         } catch (JSONException ee) {
             Log.e(TAG, ee.getMessage());
             ee.printStackTrace();
+        }
+        if (mySwitch.isChecked()) {
+            try {
+
+
+                Intent i = new Intent(Intent.ACTION_SEND);
+                i.setType("message/rfc822");
+                i.putExtra(Intent.EXTRA_EMAIL, new String[]{"stefan.nygren@gmail.com"});
+                i.putExtra(Intent.EXTRA_SUBJECT, "TGC-DEBUG");
+                i.putExtra(Intent.EXTRA_TEXT, res.toString() + "\n" + obj.toString());
+                startActivity(Intent.createChooser(i, "Send mail..."));
+
+            } catch (NullPointerException e) {
+                Log.e(TAG, e.getMessage());
+            }
         }
         ses.checkLogin(false, true);
         finish();
