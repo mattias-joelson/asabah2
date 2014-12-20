@@ -61,8 +61,8 @@ public class main extends Activity {
             public void onClick(View arg0) {
 
                 // Get username, password from EditText
-                String username = txtUsername.getText().toString().trim();
-                String password = txtPassword.getText().toString().trim();
+                String username = txtUsername.getText().toString();
+                String password = txtPassword.getText().toString();
 
                 // Check if username, password is filled
                 if (username.trim().length() > 0 && password.trim().length() > 0) {
