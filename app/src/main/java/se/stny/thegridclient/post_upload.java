@@ -6,7 +6,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import org.json.JSONException;
@@ -24,6 +26,7 @@ public class post_upload extends Activity {
     private JSONObject obj;
     private EditText txtbox;
     private userSettings ses;
+    private boolean sendEmail = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +42,19 @@ public class post_upload extends Activity {
         txtbox = (EditText) findViewById(R.id.statusUpdate);
         Button btnWithText = (Button) findViewById(R.id.UpdateWithText);
         Button btnWithoutText = (Button) findViewById(R.id.UpdateWithoutText);
+        Button btnUpdateSilent = (Button) findViewById(R.id.btnUpdateSilent);
+        Switch sw = (Switch) findViewById(R.id.switch1);
+
+        sw.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView,
+                                         boolean isChecked) {
+
+                sendEmail = isChecked;
+
+            }
+        });
 
         postData = new gridCom("updatescore", getString(R.string.API_KEY));
         btnWithText.setOnClickListener(new View.OnClickListener() {
@@ -48,6 +64,26 @@ public class post_upload extends Activity {
                 debug(txtbox.toString());
                 try {
                     obj.put("status", URLEncoder.encode(txtbox.getText().toString(), "UTF-8"));
+                    obj.put("no_mime", String.valueOf(1));
+
+                } catch (JSONException ej) {
+                    Log.e(TAG, "JSONEXCEPTION:" + ej.getMessage());
+                    ej.printStackTrace();
+                } catch (UnsupportedEncodingException eue) {
+                    Log.e(TAG, "UnsupportedEncodingException:" + eue.getMessage());
+                    eue.printStackTrace();
+                }
+                fini();
+
+            }
+        });
+        btnUpdateSilent.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View arg0) {
+                debug(txtbox.toString());
+                try {
+                    obj.put("status", URLEncoder.encode("s", "UTF-8"));
                     obj.put("no_mime", String.valueOf(1));
 
                 } catch (JSONException ej) {
@@ -80,6 +116,9 @@ public class post_upload extends Activity {
     private void fini() {
 
         try {
+            if (!sendEmail) {
+                obj.put("no_email", String.valueOf(1));
+            }
             postData.addHttpPostsFromJson(obj);
             JSONObject res = postData.getJSONFromUrl();
             if (res.getInt("status") != 200) {

@@ -67,6 +67,20 @@
                 android:textColor="#333"
                 android:textStyle="bold" />
 
+            <Switch
+
+                android:id="@+id/switch1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:clickable="false"
+                android:shadowColor="#fff"
+                android:shadowDy="-1"
+                android:shadowRadius="1"
+                android:showText="false"
+                android:text="Email me update"
+                android:textColor="#333" />
+
             <TextView
                 android:id="@+id/num_desc"
                 android:layout_width="fill_parent"
@@ -102,6 +116,14 @@
                 android:layout_height="wrap_content"
                 android:padding="4dip"
                 android:text="Update without text"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <Button
+                android:id="@+id/btnUpdateSilent"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:padding="4dip"
+                android:text="Update silently"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <LinearLayout
