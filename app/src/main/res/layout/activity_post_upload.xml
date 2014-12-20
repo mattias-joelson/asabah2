@@ -44,7 +44,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
-                android:layout_alignParentRight="true" />
+                android:layout_alignParentRight="true"
+                android:contentDescription="" />
 
         </RelativeLayout>
 
@@ -77,7 +78,7 @@
                 android:shadowColor="#fff"
                 android:shadowDy="-1"
                 android:shadowRadius="1"
-                android:text="Email me update"
+                android:text="@string/emailMeUpdateTxt"
                 android:textColor="#333" />
 
             <TextView
@@ -88,7 +89,7 @@
                 android:shadowColor="#fff"
                 android:shadowDy="-1"
                 android:shadowRadius="1"
-                android:text="\nWrite your update text in box below"
+                android:text="@string/txtWriteUpdateInfoBelow"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textColor="#333" />
 
@@ -106,7 +107,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:padding="4dip"
-                android:text="Update with text"
+                android:text="@string/txtUpdateWithText"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <Button
@@ -114,7 +115,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:padding="4dip"
-                android:text="Update without text"
+                android:text="@string/txtUpdateWithoutText"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <Button
@@ -122,7 +123,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:padding="4dip"
-                android:text="Update silently"
+                android:text="@string/txtUpdateSilently"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <LinearLayout
@@ -151,7 +152,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:padding="5dip"
-                    android:text="posting.."
+                    android:text="@string/txtPosting"
                     android:textColor="#000000"
                     android:textSize="12dip"
                     android:visibility="gone"

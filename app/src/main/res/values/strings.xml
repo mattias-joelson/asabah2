@@ -19,5 +19,11 @@
     <string name="sampleText">Fun day harrasing the portals</string>
     <string name="logout">Log out</string>
     <string name="critterID">549432d63cf56b9e0457cb4c</string>
+    <string name="emailMeUpdateTxt">Email me update</string>
+    <string name="txtWriteUpdateInfoBelow">\nWrite your update text in box below</string>
+    <string name="txtUpdateWithText">Update with text</string>
+    <string name="txtUpdateWithoutText">Update without text</string>
+    <string name="txtUpdateSilently">Update silently</string>
+    <string name="txtPosting">posting..</string>
 
 </resources>

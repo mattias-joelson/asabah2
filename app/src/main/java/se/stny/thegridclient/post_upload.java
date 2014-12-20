@@ -22,9 +22,9 @@ import se.stny.thegridclient.util.userSettings;
 
 public class post_upload extends Activity {
     private final String TAG = "post_upload.java";
-    gridCom postData = null;
+    private gridCom postData = null;
     private JSONObject obj;
-    private EditText txtbox;
+    private EditText textBox;
     private userSettings ses;
     private boolean sendEmail = true;
 
@@ -39,7 +39,7 @@ public class post_upload extends Activity {
             Log.e(TAG, "Called without an json object. closing");
             finish();
         }
-        txtbox = (EditText) findViewById(R.id.statusUpdate);
+        textBox = (EditText) findViewById(R.id.statusUpdate);
         Button btnWithText = (Button) findViewById(R.id.UpdateWithText);
         Button btnWithoutText = (Button) findViewById(R.id.UpdateWithoutText);
         Button btnUpdateSilent = (Button) findViewById(R.id.btnUpdateSilent);
@@ -61,19 +61,19 @@ public class post_upload extends Activity {
 
             @Override
             public void onClick(View arg0) {
-                debug(txtbox.toString());
+                debug(textBox.toString());
                 try {
-                    obj.put("status", URLEncoder.encode(txtbox.getText().toString(), "UTF-8"));
+                    obj.put("status", URLEncoder.encode(textBox.getText().toString(), "UTF-8"));
                     obj.put("no_mime", String.valueOf(1));
 
                 } catch (JSONException ej) {
-                    Log.e(TAG, "JSONEXCEPTION:" + ej.getMessage());
+                    Log.e(TAG, "JSONException:" + ej.getMessage());
                     ej.printStackTrace();
                 } catch (UnsupportedEncodingException eue) {
                     Log.e(TAG, "UnsupportedEncodingException:" + eue.getMessage());
                     eue.printStackTrace();
                 }
-                fini();
+                FinishUpload();
 
             }
         });
@@ -81,19 +81,19 @@ public class post_upload extends Activity {
 
             @Override
             public void onClick(View arg0) {
-                debug(txtbox.toString());
+                debug(textBox.toString());
                 try {
                     obj.put("status", URLEncoder.encode("s", "UTF-8"));
                     obj.put("no_mime", String.valueOf(1));
 
                 } catch (JSONException ej) {
-                    Log.e(TAG, "JSONEXCEPTION:" + ej.getMessage());
+                    Log.e(TAG, "JSONException:" + ej.getMessage());
                     ej.printStackTrace();
                 } catch (UnsupportedEncodingException eue) {
                     Log.e(TAG, "UnsupportedEncodingException:" + eue.getMessage());
                     eue.printStackTrace();
                 }
-                fini();
+                FinishUpload();
 
             }
         });
@@ -101,7 +101,7 @@ public class post_upload extends Activity {
 
             @Override
             public void onClick(View arg0) {
-                fini();
+                FinishUpload();
             }
         });
     }
@@ -113,7 +113,7 @@ public class post_upload extends Activity {
         toast.show();
     }
 
-    private void fini() {
+    private void FinishUpload() {
 
         try {
             if (!sendEmail) {
@@ -122,7 +122,7 @@ public class post_upload extends Activity {
             postData.addHttpPostsFromJson(obj);
             JSONObject res = postData.getJSONFromUrl();
             if (res.getInt("status") != 200) {
-                Log.e(TAG, "got returncode " + res.getString("status"));
+                Log.e(TAG, "Got return code " + res.getString("status"));
                 Log.e(TAG, res.toString());
                 Log.e(TAG, obj.toString());
 

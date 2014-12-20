@@ -23,12 +23,9 @@ import se.stny.thegridclient.util.userSettings;
 
 public class main extends Activity {
 
-    EditText txtUsername, txtPassword;
+    private EditText txtUsername, txtPassword;
 
-    Button btnLoginKey;
-    Button btnLoginPin;
-
-    userSettings session;
+    private userSettings session;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -53,8 +50,8 @@ public class main extends Activity {
         session.checkLogin(false, true);
 
         // Login button
-        btnLoginKey = (Button) findViewById(R.id.btnLoginKey);
-        btnLoginPin = (Button) findViewById(R.id.btnLoginPin);
+        Button btnLoginKey = (Button) findViewById(R.id.btnLoginKey);
+        Button btnLoginPin = (Button) findViewById(R.id.btnLoginPin);
 
 
         // Login button click event

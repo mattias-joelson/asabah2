@@ -24,12 +24,12 @@ import se.stny.thegridclient.util.tgcDataClass;
 import se.stny.thegridclient.util.userSettings;
 
 public class upload extends Activity implements ocrCallback<Integer, JSONObject, String, String> {
-    public static final String DATA_PATH = Environment.
+    private static final String DATA_PATH = Environment.
             getExternalStorageDirectory().toString()
             + "/TheGrid/";
-    public static final String lang = "eng";
+    private static final String lang = "eng";
     private static final String TAG = "Upload.java";
-    userSettings prefs;
+    private userSettings prefs;
     private Bitmap IMG;
     private tgcDataClass statsData[];
     private ProgressDialog pDialog;
@@ -37,48 +37,46 @@ public class upload extends Activity implements ocrCallback<Integer, JSONObject,
     private int currentProgressTime;
 
     private JSONObject dbgData;//TODO: REMOVE DEBUG
-    private Uri imgUri;
-    private userSettings ses;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ses = new userSettings(getApplicationContext());
+        userSettings ses = new userSettings(getApplicationContext());
         if (!ses.isLoggedIn()) {
             ses.checkLogin(true, false);
             finish();
             debug("You are currently not logged in");
-        }
-
-        allocate_tgcStruct();
-
-        dbgData = new JSONObject();  //TODO: REMOVE DEBUG
-        this.currentProgressTime = 0;
-        prefs = new userSettings(getApplicationContext());
-        Intent intent = getIntent();
-        String action = intent.getAction();
-        String type = intent.getType();
-        if (Intent.ACTION_SEND.equals(action) && type != null) {
-            if (type.startsWith("image/")) {
-                this.imgUri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
-                try {
-                    this.IMG = BitmapFactory.decodeStream(getContentResolver()
-                            .openInputStream(this.imgUri));
-                } catch (FileNotFoundException e) {
-                    Log.e(TAG, e.getMessage());
-                    Log.e(TAG, e.getCause().toString());
-                }
-            }
         } else {
-            Log.e(TAG, "Reached end of line");
-        }
-        new ocrScanner(DATA_PATH, this.IMG, this.getAssets(), lang, this.statsData, this).execute();
 
+            allocate_tgcStructure();
+
+            dbgData = new JSONObject();  //TODO: REMOVE DEBUG
+            this.currentProgressTime = 0;
+            prefs = new userSettings(getApplicationContext());
+            Intent intent = getIntent();
+            String action = intent.getAction();
+            String type = intent.getType();
+            if (Intent.ACTION_SEND.equals(action) && type != null) {
+                if (type.startsWith("image/")) {
+                    Uri imgUri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
+                    try {
+                        this.IMG = BitmapFactory.decodeStream(getContentResolver()
+                                .openInputStream(imgUri));
+                    } catch (FileNotFoundException e) {
+                        Log.e(TAG, e.getMessage());
+                        Log.e(TAG, e.getCause().toString());
+                    }
+                }
+            } else {
+                Log.e(TAG, "Reached end of line");
+            }
+            new ocrScanner(DATA_PATH, this.IMG, this.getAssets(), lang, this.statsData, this).execute();
+        }
 
     }
 
 
-    private void allocate_tgcStruct() {
+    private void allocate_tgcStructure() {
         this.statsData = new tgcDataClass[26];
         Resources res = getResources();
         this.statsData[0] = new tgcDataClass(

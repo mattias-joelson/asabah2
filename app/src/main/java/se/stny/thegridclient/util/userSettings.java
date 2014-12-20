@@ -19,14 +19,14 @@ public class userSettings {
     public static final String INNOVATOR = "INNOVATOR";
     private static final String PREF_NAME = "TheGridClientPrefs";
     private static final String IS_LOGIN = "IsLoggedIn";
-    SharedPreferences pref;
-    Editor editor;
-    Context _context;
-    int PRIVATE_MODE = 0;
+    private SharedPreferences pref;
+    private Editor editor;
+    private Context _context;
 
     // Constructor
     public userSettings(Context context) {
         this._context = context;
+        int PRIVATE_MODE = 0;
         pref = _context.getSharedPreferences(PREF_NAME, PRIVATE_MODE);
         editor = pref.edit();
 

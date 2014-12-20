@@ -129,19 +129,19 @@ public class ocrScanner extends AsyncTask<JSONObject, String, JSONObject> {
     private void translateToRightValue(String str) {
         try {
 
-            for (int i = 0; i < this.lines.length; i++) {
-                if (str.startsWith(lines[i].getIngressText())) {
+            for (tgcDataClass line : this.lines) {
+                if (str.startsWith(line.getIngressText())) {
                     this.base.setVariable(TessBaseAPI.VAR_CHAR_WHITELIST, "0123456789,M");
                     String[] stringArray = this.base.getUTF8Text().split("\\s");
-                    int pos = this.lines[i].getSplitPos() < 0 ? stringArray.length + this.lines[i].getSplitPos() : this.lines[i].getSplitPos();
+                    int pos = line.getSplitPos() < 0 ? stringArray.length + line.getSplitPos() : line.getSplitPos();
 
-                    this.res.put(this.lines[i].getGridText(), stringArray[pos].replaceAll(",", "").replaceAll("day", "").replaceAll("s", "").replaceAll("[^0-9]", ""));
+                    this.res.put(line.getGridText(), stringArray[pos].replaceAll(",", "").replaceAll("day", "").replaceAll("s", "").replaceAll("[^0-9]", ""));
                     this.base.setVariable(TessBaseAPI.VAR_CHAR_WHITELIST, "");
-                    if (this.lines[i].hasSibling()) {
-                        this.lines[this.lines[i].getSibling()].setAsUsed();
+                    if (line.hasSibling()) {
+                        this.lines[line.getSibling()].setAsUsed();
                         this.callback.ocrUpdate(1);
                     }
-                    this.lines[i].setAsUsed();
+                    line.setAsUsed();
                     this.callback.ocrUpdate(1);
                     base.setVariable(TessBaseAPI.VAR_CHAR_WHITELIST, "");
                     this.callback.ocrDebugData(str, "YES");

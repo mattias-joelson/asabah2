@@ -22,9 +22,9 @@ import java.util.List;
 
 
 public class gridCom extends AsyncTask<Void, Void, JSONObject> {
-    protected final String TAG = "HttpClient";
-    private String API_KEY = "";
-    private String URL;
+    private final String TAG = "HttpClient";
+    private final String API_KEY;
+    private final String URL;
 
 
     volatile private JSONObject result = null;
@@ -73,16 +73,14 @@ public class gridCom extends AsyncTask<Void, Void, JSONObject> {
                 this.addHttpPost(json.names().getString(i), json.get(json.names().getString(i)).toString());
             }
         } catch (Exception e) {
+            Log.e(TAG, e.getMessage());
+            e.printStackTrace();
 
         }
     }
 
     public void addHttpPost(String id, String Val) {
         nameValuePairs.add(new BasicNameValuePair(id, Val));
-    }
-
-    public void addAllHttpPosts(List<NameValuePair> pars) {
-        nameValuePairs = pars;
     }
 
     public JSONObject getJSONFromUrl() {
@@ -122,11 +120,11 @@ public class gridCom extends AsyncTask<Void, Void, JSONObject> {
 
             if (entity != null) {
                 // Read the content stream
-                InputStream instream = entity.getContent();
+                InputStream StreamInput = entity.getContent();
 
                 // convert content stream to a String
-                String resultString = convertStreamToString(instream);
-                instream.close();
+                String resultString = convertStreamToString(StreamInput);
+                StreamInput.close();
                 resultString = "[" + resultString.replace("\n", "") + "]";
                 resultString = resultString.substring(1, resultString.length() - 1); // remove wrapping "[" and "]"
                 result = new JSONObject(resultString);
