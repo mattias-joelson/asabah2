@@ -211,24 +211,29 @@ public class upload extends Activity implements ocrCallback<Integer, JSONObject,
 
     @Override
     public void ocrCompleted(JSONObject data) {
-        pDialog.setMessage("Uploading data");
-        this.pDialog.dismiss();
-        try {
-            data.put("user", prefs.getUserDetails().get(userSettings.USER_ID));
-            data.put("statcat_innovator", String.valueOf(9));
+        if (pDialog.isShowing()) {
+            try {
+                pDialog.dismiss();
+            } catch (Exception e) {// nothing }
+
+            }
+            try {
+                data.put("user", prefs.getUserDetails().get(userSettings.USER_ID));
+                data.put("statcat_innovator", String.valueOf(9));
 
 
-            Intent i = new Intent(getApplicationContext(), post_upload.class);
-            i.putExtra("json", data.toString());
-            startActivity(i);
-            finish();
+                Intent i = new Intent(getApplicationContext(), post_upload.class);
+                i.putExtra("json", data.toString());
+                startActivity(i);
+                finish();
 
 
-        } catch (Exception e) {
-            debug("WTF");
-            debug(e.getMessage());
+            } catch (Exception e) {
+                debug("WTF");
+                debug(e.getMessage());
+            }
+
         }
-
     }
 
     @Override
@@ -236,7 +241,7 @@ public class upload extends Activity implements ocrCallback<Integer, JSONObject,
         try {
             this.dbgData.put(str, status);
         } catch (JSONException ee) {
-
+            Log.i(TAG, ee.getMessage());
         }
     }
 
