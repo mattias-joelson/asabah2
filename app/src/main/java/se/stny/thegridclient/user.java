@@ -1,31 +1,28 @@
 package se.stny.thegridclient;
 
 import android.app.Activity;
-import android.content.Context;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import se.stny.thegridclient.util.DownloadImageTask;
-import se.stny.thegridclient.util.userSettings;
+import se.stny.thegridclient.util.UserSettings;
 
 public class user extends Activity {
 
 
-    private userSettings ses;
+    private UserSettings ses;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user);
-        ses = new userSettings(getApplicationContext());
+        ses = new UserSettings(getApplicationContext());
 
-        debug(ses.getUserDetails().get(userSettings.IMAGE_URL));
-        ((TextView) findViewById(R.id.agentName)).setText(ses.getUserDetails().get(userSettings.AGENT_NAME));
+        ((TextView) findViewById(R.id.agentName)).setText(ses.getUserDetails().get(UserSettings.AGENT_NAME));
         new DownloadImageTask((ImageView) findViewById(R.id.img_profile))
-                .execute(ses.getUserDetails().get(userSettings.IMAGE_URL).replace("sz=50", "sz=200"));
+                .execute(ses.getUserDetails().get(UserSettings.IMAGE_URL).replace("sz=50", "sz=200"));
     }
 
 
@@ -50,12 +47,5 @@ public class user extends Activity {
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    private void debug(String string) {
-        Context context = getApplicationContext();
-        int duration = Toast.LENGTH_SHORT;
-        Toast toast = Toast.makeText(context, string, duration);
-        toast.show();
     }
 }

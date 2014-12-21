@@ -18,14 +18,14 @@ import com.crittercism.app.Crittercism;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import se.stny.thegridclient.gridCom.gridCom;
-import se.stny.thegridclient.util.userSettings;
+import se.stny.thegridclient.gridCom.GridCom;
+import se.stny.thegridclient.util.UserSettings;
 
 public class main extends Activity {
 
     private EditText txtUsername, txtPassword;
 
-    private userSettings session;
+    private UserSettings session;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -40,7 +40,7 @@ public class main extends Activity {
             StrictMode.setThreadPolicy(policy);
         }
         // Session Manager
-        session = new userSettings(getApplicationContext());
+        session = new UserSettings(getApplicationContext());
 
         // Email, Password input text
         txtUsername = (EditText) findViewById(R.id.txtUsername);
@@ -66,56 +66,55 @@ public class main extends Activity {
 
                 // Check if username, password is filled
                 if (username.length() > 0 && password.length() > 0) {
-                    gridCom client = new gridCom("userinfo", getString(R.string.API_KEY));
-                    client.addHttpPost("user", password);
-                    JSONObject tmp = client.getJSONFromUrl();
-                    if (client.getState() != gridCom.runState.ERROR) {
-                        debug(tmp.toString());
-                        Log.i("request done", tmp.toString());
-                        try {
-                            int status = tmp.getInt("status");
-                            if (status == 200) {
 
-                                if (tmp.get("codename").toString().toLowerCase().equals(username.toLowerCase())) {
-                                    session.createLoginSession(tmp.getString("codename"), tmp.getString("profilepic").replace("\\/", "/"), password, tmp.getString("innovator"));
-                                    Intent i = new Intent(getApplicationContext(), user.class);
-                                    startActivity(i);
-                                    finish();
+                    if (username.length() > 0 && password.length() > 0) {
+                        GridCom client = new GridCom("userinfo", getString(R.string.API_KEY));
+                        client.addHttpPost("user", password);
+                        JSONObject tmp = client.getJSONFromUrl();
+                        if (client.getState() != GridCom.runState.ERROR) {
+                            debug(tmp.toString());
+                            Log.i("request done", tmp.toString());
+                            try {
+                                int status = tmp.getInt("status");
+                                if (status == 200) {
+
+                                    if (tmp.get("codename").toString().toLowerCase().equals(username.toLowerCase())) {
+                                        session.createLoginSession(tmp.getString("codename"), tmp.getString("profilepic").replace("\\/", "/"), password, tmp.getString("innovator"));
+                                        Intent i = new Intent(getApplicationContext(), user.class);
+                                        startActivity(i);
+                                        finish();
+
+                                    } else {
+                                        // username / password doesn't match
+                                        session.logoutUser();
+                                        debug("Wrong username/key)");
+                                    }
 
                                 } else {
-                                    // username / password doesn't match
-                                    session.logoutUser();
-                                    debug("Wrong username/key)");
+                                    debug("Data request failed with error: " + tmp.get("status") + "\n" + tmp.get("error"));
                                 }
-
-                            } else {
-                                debug("Data request failed with status: " + tmp.get("status"));
-                                debug("Data request failed with error: " + tmp.get("error"));
+                            } catch (JSONException ej) {
+                                Log.e("main", ej.getMessage());
+                                ej.printStackTrace();
                             }
-                        } catch (JSONException ej) {
-                            Log.e("main", ej.getMessage());
-                            ej.printStackTrace();
-                        }
+
+                        } else
+                            debug("ERROR STATE");
+
 
                     } else
-                        debug("ERROR STATE");
 
+                    {
+                        // user didn't entered username or password
+                        // Show alert asking him to enter the details
+                        debug("please provide User Information");
 
-                    // Staring MainActivity
-
-
-                } else
-
-                {
-                    // user didn't entered username or password
-                    // Show alert asking him to enter the details
-                    debug("please provide User Information");
+                    }
 
                 }
 
+
             }
-
-
         });
     }
 

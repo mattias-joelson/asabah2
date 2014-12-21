@@ -2,7 +2,7 @@ package se.stny.thegridclient;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -18,22 +18,23 @@ import org.json.JSONObject;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
-import se.stny.thegridclient.gridCom.gridCom;
-import se.stny.thegridclient.util.userSettings;
+import se.stny.thegridclient.gridCom.GridCom;
+import se.stny.thegridclient.util.UserSettings;
 
 public class post_upload extends Activity {
     private final String TAG = "post_upload.java";
-    private gridCom postData = null;
+    private GridCom postData = null;
+    private GridCom postDebugData = null;
     private JSONObject obj;
     private JSONObject dbgdata;
     private EditText textBox;
-    private userSettings ses;
+    private UserSettings ses;
     private boolean sendEmail = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ses = new userSettings(getApplicationContext());
+        ses = new UserSettings(getApplicationContext());
 
         setContentView(R.layout.activity_post_upload);
         try {
@@ -60,7 +61,8 @@ public class post_upload extends Activity {
             }
         });
 
-        postData = new gridCom("updatescore", getString(R.string.API_KEY));
+        postData = new GridCom("updatescore", getString(R.string.API_KEY));
+        postDebugData = new GridCom("setdata", getString(R.string.API_KEY));
         btnWithText.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -131,7 +133,7 @@ public class post_upload extends Activity {
                 Log.e(TAG, "Got return code " + res.getString("status"));
                 Log.e(TAG, res.toString());
                 Log.e(TAG, obj.toString());
-
+                Log.e(TAG, dbgdata.toString());
             }
         } catch (JSONException ee) {
             Log.e(TAG, ee.getMessage());
@@ -139,16 +141,24 @@ public class post_upload extends Activity {
         }
         if (mySwitch.isChecked()) {
             try {
-
-
-                Intent i = new Intent(Intent.ACTION_SEND);
-                i.setType("message/rfc822");
-                i.putExtra(Intent.EXTRA_EMAIL, new String[]{"stefan.nygren@gmail.com"});
-                i.putExtra(Intent.EXTRA_SUBJECT, "TGC-DEBUG");
-                i.putExtra(Intent.EXTRA_TEXT, toIndentedString(res) + "\n" + toIndentedString(obj) + "\n" + toIndentedString(dbgdata));
-                startActivity(Intent.createChooser(i, "Send mail..."));
-
-            } catch (NullPointerException e) {
+                JSONObject resDebug = new JSONObject();
+                resDebug.put("userId", ses.getUserDetails().get(UserSettings.AGENT_NAME));
+                resDebug.put("scan-result", "#SCANRES#");
+                resDebug.put("SentData", "#SENTDATA#");
+                resDebug.put("response", "#RESPONSE#");
+                String dbgStr = resDebug.toString();
+                dbgStr = dbgStr.replaceAll("\"#SCANRES#\"", "[" + dbgdata.toString() + "]");
+                dbgStr = dbgStr.replaceAll("\"#SENTDATA#\"", "[" + obj.toString() + "]");
+                if (res == null) {
+                    res = new JSONObject();
+                    res.put("response", "null");
+                }
+                dbgStr = dbgStr.replaceAll("\"#RESPONSE#\"", "[" + res.toString() + "]");
+                postDebugData.addHttpPost("user", ses.getUserDetails().get(UserSettings.USER_ID));
+                postDebugData.addHttpPost("device", getDevice());
+                postDebugData.addHttpPost("data", dbgStr);
+                debug(postDebugData.getJSONFromUrl().toString());
+            } catch (Exception e) {
                 Log.e(TAG, e.getMessage());
             }
         }
@@ -156,11 +166,26 @@ public class post_upload extends Activity {
         finish();
     }
 
-    private String toIndentedString(JSONObject obj) {
-        try {
-            return obj.toString(2);
-        } catch (JSONException e) {
-            return e.toString();
+    private String getDevice() {
+        String manufacturer = Build.MANUFACTURER;
+        String model = Build.MODEL;
+        if (model.startsWith(manufacturer)) {
+            return capitalize(model);
+        } else {
+            return capitalize(manufacturer) + " " + model;
+        }
+    }
+
+
+    private String capitalize(String s) {
+        if (s == null || s.length() == 0) {
+            return "";
+        }
+        char first = s.charAt(0);
+        if (Character.isUpperCase(first)) {
+            return s;
+        } else {
+            return Character.toUpperCase(first) + s.substring(1);
         }
     }
 }
