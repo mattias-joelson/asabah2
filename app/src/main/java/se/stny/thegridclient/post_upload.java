@@ -18,13 +18,13 @@ import org.json.JSONObject;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
-import se.stny.thegridclient.gridCom.GridCom;
+import se.stny.thegridclient.gridCom.gridCom;
 import se.stny.thegridclient.util.userSettings;
 
 public class post_upload extends Activity {
     private final String TAG = "post_upload.java";
-    private GridCom postData = null;
-    private GridCom postDebugData = null;
+    private gridCom postData = null;
+    private gridCom postDebugData = null;
     private JSONObject obj;
     private JSONObject dbgdata;
     private EditText textBox;
@@ -61,8 +61,8 @@ public class post_upload extends Activity {
             }
         });
 
-        postData = new GridCom("updatescore", getString(R.string.API_KEY));
-        postDebugData = new GridCom("setdata", getString(R.string.API_KEY));
+        postData = new gridCom("updatescore", getString(R.string.API_KEY));
+        postDebugData = new gridCom("setdata", getString(R.string.API_KEY));
         btnWithText.setOnClickListener(new View.OnClickListener() {
 
             @Override
