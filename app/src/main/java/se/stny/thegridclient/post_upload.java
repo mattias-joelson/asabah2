@@ -18,23 +18,23 @@ import org.json.JSONObject;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
-import se.stny.thegridclient.gridCom.GridCom;
-import se.stny.thegridclient.util.UserSettings;
+import se.stny.thegridclient.gridCom.gridCom;
+import se.stny.thegridclient.util.userSettings;
 
 public class post_upload extends Activity {
     private final String TAG = "post_upload.java";
-    private GridCom postData = null;
-    private GridCom postDebugData = null;
+    private gridCom postData = null;
+    private gridCom postDebugData = null;
     private JSONObject obj;
     private JSONObject dbgdata;
     private EditText textBox;
-    private UserSettings ses;
+    private userSettings ses;
     private boolean sendEmail = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ses = new UserSettings(getApplicationContext());
+        ses = new userSettings(getApplicationContext());
 
         setContentView(R.layout.activity_post_upload);
         try {
@@ -61,8 +61,8 @@ public class post_upload extends Activity {
             }
         });
 
-        postData = new GridCom("updatescore", getString(R.string.API_KEY));
-        postDebugData = new GridCom("setdata", getString(R.string.API_KEY));
+        postData = new gridCom("updatescore", getString(R.string.API_KEY));
+        postDebugData = new gridCom("setdata", getString(R.string.API_KEY));
         btnWithText.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -142,7 +142,7 @@ public class post_upload extends Activity {
         if (mySwitch.isChecked()) {
             try {
                 JSONObject resDebug = new JSONObject();
-                resDebug.put("userId", ses.getUserDetails().get(UserSettings.AGENT_NAME));
+                resDebug.put("userId", ses.getUserDetails().get(userSettings.AGENT_NAME));
                 resDebug.put("scan-result", "#SCANRES#");
                 resDebug.put("SentData", "#SENTDATA#");
                 resDebug.put("response", "#RESPONSE#");
@@ -154,7 +154,7 @@ public class post_upload extends Activity {
                     res.put("response", "null");
                 }
                 dbgStr = dbgStr.replaceAll("\"#RESPONSE#\"", "[" + res.toString() + "]");
-                postDebugData.addHttpPost("user", ses.getUserDetails().get(UserSettings.USER_ID));
+                postDebugData.addHttpPost("user", ses.getUserDetails().get(userSettings.USER_ID));
                 postDebugData.addHttpPost("device", getDevice());
                 postDebugData.addHttpPost("data", dbgStr);
                 debug(postDebugData.getJSONFromUrl().toString());

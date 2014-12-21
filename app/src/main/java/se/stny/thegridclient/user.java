@@ -8,21 +8,21 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import se.stny.thegridclient.util.DownloadImageTask;
-import se.stny.thegridclient.util.UserSettings;
+import se.stny.thegridclient.util.userSettings;
 
 public class user extends Activity {
 
 
-    private UserSettings ses;
+    private userSettings ses;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user);
-        ses = new UserSettings(getApplicationContext());
+        ses = new userSettings(getApplicationContext());
 
-        ((TextView) findViewById(R.id.agentName)).setText(ses.getUserDetails().get(UserSettings.AGENT_NAME));
+        ((TextView) findViewById(R.id.agentName)).setText(ses.getUserDetails().get(userSettings.AGENT_NAME));
         new DownloadImageTask((ImageView) findViewById(R.id.img_profile))
-                .execute(ses.getUserDetails().get(UserSettings.IMAGE_URL).replace("sz=50", "sz=200"));
+                .execute(ses.getUserDetails().get(userSettings.IMAGE_URL).replace("sz=50", "sz=200"));
     }
 
 
