@@ -145,7 +145,7 @@ public class post_upload extends Activity {
                 i.setType("message/rfc822");
                 i.putExtra(Intent.EXTRA_EMAIL, new String[]{"stefan.nygren@gmail.com"});
                 i.putExtra(Intent.EXTRA_SUBJECT, "TGC-DEBUG");
-                i.putExtra(Intent.EXTRA_TEXT, res.toString() + "\n" + obj.toString() + "\n" + dbgdata.toString());
+                i.putExtra(Intent.EXTRA_TEXT, toIndentedString(res) + "\n" + toIndentedString(obj) + "\n" + toIndentedString(dbgdata));
                 startActivity(Intent.createChooser(i, "Send mail..."));
 
             } catch (NullPointerException e) {
@@ -154,6 +154,14 @@ public class post_upload extends Activity {
         }
         ses.checkLogin(false, true);
         finish();
+    }
+
+    private String toIndentedString(JSONObject obj) {
+        try {
+            return obj.toString(2);
+        } catch (JSONException e) {
+            return e.toString();
+        }
     }
 }
 
