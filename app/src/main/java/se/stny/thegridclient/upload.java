@@ -37,11 +37,13 @@ public class upload extends Activity implements ocrCallback<Integer, JSONObject,
     private int currentProgressTime;
 
     private JSONObject dbgData;//TODO: REMOVE DEBUG
+    private int debugCount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         userSettings ses = new userSettings(getApplicationContext());
+        debugCount = 0;
         if (!ses.isLoggedIn()) {
             ses.checkLogin(true, false);
             finish();
@@ -222,6 +224,7 @@ public class upload extends Activity implements ocrCallback<Integer, JSONObject,
 
                 Intent i = new Intent(getApplicationContext(), post_upload.class);
                 i.putExtra("json", data.toString());
+                i.putExtra("dbgdata", dbgData.toString());
                 startActivity(i);
                 finish();
 
@@ -237,7 +240,8 @@ public class upload extends Activity implements ocrCallback<Integer, JSONObject,
     @Override
     public void ocrDebugData(String str, String status) {
         try {
-            this.dbgData.put(str, status);
+            debugCount = debugCount + 1;
+            this.dbgData.put(String.valueOf(debugCount), status + "->" + str);
         } catch (JSONException ee) {
             Log.i(TAG, ee.getMessage());
         }

@@ -25,6 +25,7 @@ public class post_upload extends Activity {
     private final String TAG = "post_upload.java";
     private gridCom postData = null;
     private JSONObject obj;
+    private JSONObject dbgdata;
     private EditText textBox;
     private userSettings ses;
     private boolean sendEmail = true;
@@ -33,9 +34,11 @@ public class post_upload extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ses = new userSettings(getApplicationContext());
+
         setContentView(R.layout.activity_post_upload);
         try {
             obj = new JSONObject(getIntent().getStringExtra("json"));
+            dbgdata = new JSONObject(getIntent().getStringExtra("dbgdata"));
         } catch (JSONException ej) {
             Log.e(TAG, "Called without an json object. closing");
             finish();
