@@ -51,7 +51,7 @@ public class main extends Activity {
 
         // Login button
         Button btnLoginKey = (Button) findViewById(R.id.btnLoginKey);
-        //Button btnLoginPin = (Button) findViewById(R.id.btnLoginPin);
+        Button btnLoginPin = (Button) findViewById(R.id.btnLoginPin);
 
 
         // Login button click event
