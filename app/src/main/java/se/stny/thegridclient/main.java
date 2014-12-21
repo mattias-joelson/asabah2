@@ -61,11 +61,11 @@ public class main extends Activity {
             public void onClick(View arg0) {
 
                 // Get username, password from EditText
-                String username = txtUsername.getText().toString();
-                String password = txtPassword.getText().toString();
+                String username = txtUsername.getText().toString().trim();
+                String password = txtPassword.getText().toString().trim();
 
                 // Check if username, password is filled
-                if (username.trim().length() > 0 && password.trim().length() > 0) {
+                if (username.length() > 0 && password.length() > 0) {
                     gridCom client = new gridCom("userinfo", getString(R.string.API_KEY));
                     client.addHttpPost("user", password);
                     JSONObject tmp = client.getJSONFromUrl();
