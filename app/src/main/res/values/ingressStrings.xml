@@ -68,8 +68,10 @@
     <string name="g_max_time_field_held">statcat_def_fieldheld</string>
     <integer name="n_max_time_field_held">4</integer>
     <string name="i_largest_field_muxdays">Largest Field MUs x Days</string>
+    <string name="i_largest_field_muxdays2">Largest Field MUS x Days</string>
     <string name="g_largest_field_muxdays">statcat_def_muxdays</string>
     <integer name="n_largest_field_muxdays">-2</integer>
+
     <string name="i_mods_deployed">Mods Deployed</string>
     <string name="g_mods_deployed">statcat_bui_moddeploy</string>
     <integer name="n_mods_deployed">2</integer>
