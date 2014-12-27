@@ -94,7 +94,9 @@ public class ocrScanner extends AsyncTask<JSONObject, String, JSONObject> {
         base.setVariable(TessBaseAPI.VAR_CHAR_WHITELIST, "0123456789,");
         base.setRectangle(allLinesPixa.getBoxRect(3));
         try {
+            this.callback.ocrDebugData(base.getUTF8Text(), "RAW-AP");
             this.res.put("statcat_ap", base.getUTF8Text().replaceAll("[^\\d]", ""));
+            this.callback.ocrDebugData(String.valueOf(this.res.get("statcat_ap")), "PARSED-AP");
         } catch (JSONException e) {
             Log.e(TAG, "Unable to acquire ap");
         }

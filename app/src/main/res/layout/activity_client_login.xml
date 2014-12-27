@@ -63,7 +63,8 @@
                 android:id="@+id/btnLoginKey"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/LoginWIthKey" />
+                android:text="@string/LoginWIthKey"
+                android:onClick="loginWithKey" />
         </LinearLayout>
 
         <LinearLayout

@@ -8,7 +8,7 @@ import android.content.SharedPreferences.Editor;
 
 import java.util.HashMap;
 
-import se.stny.thegridclient.main;
+import se.stny.thegridclient.ClientLoginActivity;
 import se.stny.thegridclient.user;
 
 public class userSettings {
@@ -48,7 +48,7 @@ public class userSettings {
     public void checkLogin(boolean redirectLoggedOut, boolean redirectLoggedIn) {
 
         if (!this.isLoggedIn() && redirectLoggedOut) {
-            Intent i = new Intent(_context, main.class);
+            Intent i = new Intent(_context, ClientLoginActivity.class);
             i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             _context.startActivity(i);
